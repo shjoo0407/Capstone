@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'users',
     'fileupload',
     'bootstrap4',
+    'login',
 ]
 
 REST_FRAMEWORK = {

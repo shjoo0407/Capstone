@@ -44,4 +44,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('mydatabase/', include('userinfo.urls')),
     path('', include('fileupload.urls')),
+    path('account/', include('login.urls')),
 ]
