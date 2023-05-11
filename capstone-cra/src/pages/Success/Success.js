@@ -3,7 +3,6 @@ import "../../styles/reset.css";
 import "../../styles/common.css";
 import "./Success.css";
 import HeaderNav from "../../components/Header/HeaderNav";
-import MainImg from "../../assets/img/main_img.png";
 import { Link } from "react-router-dom";
 
 function Success() {
