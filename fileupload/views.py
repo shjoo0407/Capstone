@@ -22,4 +22,3 @@ def fileUpload(request):
         }
         return render(request, '../templates/fileupload.html', context)
 
-def train():

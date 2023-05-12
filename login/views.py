@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Accounts
 from django.contrib.auth.hashers import check_password, make_password
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+
 
 # Create your views here.
 def register(request):
@@ -59,3 +62,13 @@ def logout(request):
     if request.session['account']:
         del(request.session['account'])
     return redirect('/')
+
+@login_required
+def profile(request):
+    user = request.user
+    context = {
+        'username': user.username,
+        'userpw': user.userpw,
+
+    }
+    return render(request, 'profile.html', context)
