@@ -40,9 +40,11 @@ schema_view = get_schema_view(
     #path('mydatabase/', UserList.as_view(), name='user-list'),
     #path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 urlpatterns = [
-    path('fileupload/', include('fileupload.urls')),
+    path('fileupload/', include('fileupload.urls')), # todo 삭제예정
     path('admin/', admin.site.urls),
-    path('mydatabase/', include('userinfo.urls')),
-    path('', include('fileupload.urls')),
-    path('account/', include('login.urls')),
+    path('mydatabase/', include('userinfo.urls')), # todo 삭제예정
+    path('', include('fileupload.urls')), # todo 삭제예정
+    path('account/', include('login.urls')), # todo 삭제예정
+    #path('accounts/', include('accounts.urls')), # 로그인/로그아웃/회원가입
+    path('api/', include('api.urls')), # API 호출
 ]

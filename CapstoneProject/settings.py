@@ -43,8 +43,9 @@ INSTALLED_APPS = [
     'drf_yasg',
     'users',
     'fileupload',
-    'bootstrap4',
     'login',
+    'accounts',
+    'api',
 ]
 
 REST_FRAMEWORK = {
@@ -101,6 +102,8 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
+#AUTH_USER_MODEL = 'accounts.Account'
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -122,7 +125,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
