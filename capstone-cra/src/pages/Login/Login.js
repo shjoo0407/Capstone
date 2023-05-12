@@ -4,7 +4,6 @@ import "../../styles/common.css";
 import "./Login.css";
 import HeaderNav from "../../components/Header/HeaderNav";
 import { Link } from "react-router-dom";
-import axois from "axios";
 import axios from "axios";
 
 const url = "api/";
@@ -39,17 +38,6 @@ function Login() {
     const userValue = e.target.value;
     setPw(userValue);
   }
-
-  // async function updateMainCat(value) {
-  //   const newCat = await fetchCat(value);
-  //   setMainCat(newCat);
-
-  //   setCounter((prev) => {
-  //     const nextCounter = prev + 1;
-  //     jsonLocalStorage.setItem("counter", nextCounter);
-  //     return nextCounter;
-  //   });
-  // }
 
   function updateLogin(val1, val2) {
     setId(val1);
