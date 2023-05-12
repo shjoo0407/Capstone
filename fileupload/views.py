@@ -21,3 +21,5 @@ def fileUpload(request):
             'fileuploadForm': fileuploadForm,
         }
         return render(request, '../templates/fileupload.html', context)
+
+def train():

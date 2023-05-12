@@ -24,7 +24,7 @@ def register(request):
                 username=username,
                 userpw=make_password(userpw),
             )
-            account.save()
+            account.save() # DB에 저장
 
         return render(request, template_url, res_data)
 
