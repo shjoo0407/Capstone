@@ -7,7 +7,7 @@
     <title>Cal로리</title>
     <link rel="stylesheet" href="../static/css/reset.css" />
     <link rel="stylesheet" href="../static/css/styles.css" />
-    <link rel="stylesheet" href="../static/css/login_page.css" />
+    <link rel="stylesheet" href="../static/css/main_page.css" />
   </head>
   <body>
     <div class="container">
@@ -37,23 +37,19 @@
 
       <!-- 메인 영역 -->
       <div class="main">
-        <div class="login-content">
-          <div class="login-title">Cal로리에 로그인하기</div>
-          <form action="url" method="POST">
-            <ul class="login-list">
-              <li class="login-item">
-                <label for="id">아이디</label>
-                <input type="text" id="id" placeholder="아이디" />
-              </li>
-              <li class="login-item">
-                <label for="pw">비밀번호</label>
-                <input type="password" id="pw" placeholder="비밀번호" />
-              </li>
-            </ul>
-            <button type="submit" class="button submit-btn">
-              <a href="./success.html">Login</a>
-            </button>
-          </form>
+        <div class="common-inner main-content">
+          <div class="slogan slogan-main">
+            Cal로리와 함께, 쉽고 빠른 식단관리
+          </div>
+          <div class="slogan slogan-sub">
+            사진 찍어 칼로리 파악부터 건강한 식습관까지
+          </div>
+          <span class="button start-btn"><a href="#">시작하기 →</a></span>
+          <img
+            src="../static/images/main_img.png"
+            alt="음식 사진"
+            class="main-img"
+          />
         </div>
       </div>
       <!-- // 메인영역 -->
