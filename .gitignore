@@ -3,8 +3,11 @@ venv/bin
 ### Django ###
 *.log
 *.pot
-*.pyc
+
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
@@ -22,8 +25,6 @@ venv.bak/
 .idea/
 
 .DS_Store
-__pycache__/
-*.pyc
-*.pyo
+
 
 
