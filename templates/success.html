@@ -5,9 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cal로리</title>
-    <link rel="stylesheet" href="../static/css/reset.css" />
-    <link rel="stylesheet" href="../static/css/styles.css" />
-    <link rel="stylesheet" href="../static/css/login_page.css" />
+    <link rel="stylesheet" href="../assets/css/reset.css" />
+    <link rel="stylesheet" href="../assets/css/styles.css" />
+    <link rel="stylesheet" href="../assets/css/login_page.css" />
   </head>
   <body>
     <div class="container">
@@ -16,7 +16,7 @@
         <div class="common-inner header-content">
           <div class="header_left">
             <a href="./index.html" class="title">
-              <img src="../static/images/main_icon.png" alt="홈 아이콘" />
+              <img src="../assets/images/main_icon.png" alt="홈 아이콘" />
               <span>Cal로리</span>
             </a>
             <ul class="nav_list">
@@ -37,23 +37,13 @@
 
       <!-- 메인 영역 -->
       <div class="main">
-        <div class="login-content">
-          <div class="login-title">Cal로리에 로그인하기</div>
-          <form action="url" method="POST">
-            <ul class="login-list">
-              <li class="login-item">
-                <label for="id">아이디</label>
-                <input type="text" id="id" placeholder="아이디" />
-              </li>
-              <li class="login-item">
-                <label for="pw">비밀번호</label>
-                <input type="password" id="pw" placeholder="비밀번호" />
-              </li>
-            </ul>
-            <button type="submit" class="button submit-btn">
-              <a href="./success.html">Login</a>
-            </button>
-          </form>
+        <div class="login-content success-content">
+          <div class="success-title">환영합니다, 000님!</div>
+          <img
+            src="../assets/images/welcome.png"
+            alt="환영합니다 사진"
+            class="success-img"
+          />
         </div>
       </div>
       <!-- // 메인영역 -->
