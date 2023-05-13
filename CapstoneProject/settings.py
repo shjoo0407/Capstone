@@ -39,12 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'userinfo',
     'drf_yasg',
-    'users',
-    'fileupload',
-    'bootstrap4',
-    'login',
+    'accounts',
+    'api',
 ]
 
 REST_FRAMEWORK = {
@@ -122,7 +119,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
