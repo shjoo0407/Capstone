@@ -68,7 +68,7 @@ function Join() {
           <form style={{ display: form1Visible ? "block" : "none" }}>
             <ul className="login-list">
               <li className="login-item">
-                <label for="id">아이디</label>
+                <label>아이디</label>
                 <input
                   type="text"
                   id="id"
@@ -80,7 +80,7 @@ function Join() {
                 />
               </li>
               <li className="login-item">
-                <label for="pw">비밀번호</label>
+                <label>비밀번호</label>
                 <input
                   type="password"
                   id="pw"
@@ -92,7 +92,7 @@ function Join() {
                 />
               </li>
               <li className="login-item">
-                <label for="name">이름</label>
+                <label>이름</label>
                 <input
                   type="text"
                   id="name"
@@ -104,7 +104,7 @@ function Join() {
                 />
               </li>
               <li className="login-item">
-                <label for="name">생년월일</label>
+                <label>생년월일</label>
                 <input
                   type="date"
                   name="birthdate"
@@ -132,7 +132,7 @@ function Join() {
           >
             <ul className="login-list">
               <li className="login-item">
-                <label for="sex">성별</label>
+                <label>성별</label>
                 <div className="radio-container">
                   <div className="radio-item">
                     <input
@@ -157,7 +157,7 @@ function Join() {
                 </div>
               </li>
               <li className="login-item half-item">
-                <label for="height">키(cm)</label>
+                <label>키(cm)</label>
                 <div className="half-unit">
                   <input
                     type="number"
@@ -171,7 +171,7 @@ function Join() {
                 </div>
               </li>
               <li className="login-item half-item">
-                <label for="weight">몸무게(kg)</label>
+                <label>몸무게(kg)</label>
                 <div className="half-unit">
                   <input
                     type="number"
