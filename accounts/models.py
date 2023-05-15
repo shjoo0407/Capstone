@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 
 
 # Create your models here.
-class Account(AbstractUser): # + id,password,last_login,is_superuser,username,first_name,last_name,email,is_staff,is_active,date_joined
+class Account(AbstractUser): # + id,password,#last_login,is_superuser,username,#first_name,#last_name,email,is_staff,is_active,date_joined
     name = models.CharField(max_length=30, blank=True, null=True) # 이름
     birth = models.DateField(blank=True, null=True) # 생년월일
     gender = models.CharField(max_length=2, blank=True, null=True) # 성별
@@ -16,6 +16,8 @@ class Account(AbstractUser): # + id,password,last_login,is_superuser,username,fi
 
     USERNAME_FIELD = 'username'
     PASSWORD_FIELD = 'password'
+    is_superuser = models.BooleanField(default=False) # 슈퍼계정 기본값 False
+
     class Meta:
         managed = True
         db_table = 'account'
