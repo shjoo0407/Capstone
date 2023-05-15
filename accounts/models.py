@@ -14,6 +14,8 @@ class Account(AbstractUser): # + id,password,last_login,is_superuser,username,fi
     groups = models.ManyToManyField('auth.Group', related_name="user_accounts", blank=True)
     user_permissions = models.ManyToManyField('auth.Permission', related_name="user_accounts", blank=True)
 
+    USERNAME_FIELD = 'username'
+    PASSWORD_FIELD = 'password'
     class Meta:
         managed = True
         db_table = 'account'

@@ -26,5 +26,11 @@ venv.bak/
 
 .DS_Store
 
+# node_modules
+/static/capstone-cra/node_modules
+
+# staticfiles
+/static/staticfiles
+
 
 

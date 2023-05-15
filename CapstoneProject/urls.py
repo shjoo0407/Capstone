@@ -21,10 +21,35 @@ from django.conf import settings
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
+from django.views.generic import TemplateView
+from django.conf import settings
+from django.conf.urls.static import static
+from django.views.static import serve
+from accounts.views import Login
+import os
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('')),
-    path('accounts/', include('accounts.urls')),
-    path('api/', include('api.urls')),
+    # path('accounts/', include('accounts.urls')),
+    path('api/', Login, name='login'),#api 테스트
+    path('', TemplateView.as_view(template_name='index.html')),
 ]
+
+#path('login/', serve, {'document_root': settings.STATIC_ROOT, 'path': 'capstone-cra/build/index.html'}),
+
+
+#if settings.DEBUG:
+    #urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+#STATIC_URL = '/static/'
+
+#STATICFILES_DIRS = [
+    #os.path.join(BASE_DIR, 'static'),
+    #os.path.join(BASE_DIR, 'static/capstone-cra/build')
+#]
+
+#STATIC_ROOT = os.path.join(BASE_DIR, 'static', 'staticfiles')
+
+#STATICFILES_EXCLUDE = [
+    #'node_modules',
+#]
