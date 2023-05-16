@@ -31,7 +31,7 @@ import os
 urlpatterns = [
     path('admin/', admin.site.urls),
     # path('accounts/', include('accounts.urls')),
-    path('api/', Login, name='login'),#api 테스트
+    path('api/', Login, name='login'),#todo api 수정 필요
     path('', TemplateView.as_view(template_name='index.html')),
 ]
 
