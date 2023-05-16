@@ -151,7 +151,7 @@ def validate_token(request):
     except (jwt.InvalidTokenError, User.DoesNotExist):
         return False # 유효하지 않은 토큰
 
-# (jwt) 토큰에서 사용자 id 받아오기(실제 아이디는 username)
+# (jwt) 토큰에서 사용자 id 받아오기(실제 아이디는 username, id : 1,2,3,4, ...)
 def get_id_from_token(request):
     jwt_token = request.META.get('HTTP_AUTHORIZATION').split(' ')[1]
     decoded_token = jwt.decode(jwt_token, SECRET_KEY, algorithms=['HS256'])
