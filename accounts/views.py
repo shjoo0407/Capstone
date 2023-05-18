@@ -14,7 +14,7 @@ import json
 import jwt
 import logging
 from CapstoneProject.settings import SECRET_KEY
-from models import BlacklistedToken
+from .models import BlacklistedToken
 # Create your views here.
 
 # 회원가입
@@ -123,8 +123,6 @@ def Logout(request):
         return JsonResponse({'message': '유효하지 않은 토큰입니다.'}, status=400)
 
     return JsonResponse({'message': '로그아웃 실패'}, status=400)
-
-
 
 # 마이페이지 조회(/api/accounts/mypage)
 @csrf_exempt
