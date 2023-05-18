@@ -10,6 +10,7 @@ def Upload(request):
     if request.method == 'GET':
         if validate_token(request):
             userid = get_id_from_token(request)
+
         return
 
     return JsonResponse({'message': '잘못된 요청'}, status=500)

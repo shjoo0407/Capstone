@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'accounts',
     'api',
+    'main',
 ]
 
 REST_FRAMEWORK = {
@@ -87,7 +88,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'test_db',
         'USER': 'root',
-        'PASSWORD': 'rkdtnals974',
+        'PASSWORD': '7169',
         'HOST': 'localhost',
         'PORT': '3306',
     }
