@@ -14,6 +14,7 @@ import json
 import jwt
 import logging
 from CapstoneProject.settings import SECRET_KEY
+from models import BlacklistedToken
 # Create your views here.
 
 # 회원가입
@@ -76,11 +77,11 @@ def Login(request):
                 'userid': user.id,
                 'exp': expired,
             }
-            jwt_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
-            print(f"jwt_token : {jwt_token}")
-            decoded_token = jwt.decode(jwt_token, SECRET_KEY, algorithms=['HS256'])
-            print(f"decoded_token : {decoded_token}")
-            print(decoded_token['userid'], decoded_token['exp'])
+            jwt_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256') # jwt 토큰
+            # print(f"jwt_token : {jwt_token}")
+            # decoded_token = jwt.decode(jwt_token, SECRET_KEY, algorithms=['HS256'])
+            # print(f"decoded_token : {decoded_token}")
+            # print(decoded_token['userid'], decoded_token['exp'])
             # 데이터
             data = {
                 'status': '로그인 성공',
@@ -103,14 +104,31 @@ def Login(request):
     return JsonResponse({'message': '잘못된 요청'}, status=400)
 
 # 로그아웃(/api/accounts/logout)
+@csrf_exempt
 def Logout(request):
-    logout(request) # 로그아웃
-    return JsonResponse({'message': '로그아웃 성공'}, status=200)
+    jwt_token = request.META.get('HTTP_AUTHORIZATION').split(' ')[1]
+    try:
+        decoded_token = jwt.decode(jwt_token, SECRET_KEY, algorithms=['HS256'])
+        if is_token_blacklisted(jwt_token):
+            return JsonResponse({'message': '이미 로그아웃된 토큰입니다'}, status=400)
+
+        invalidate_token(jwt_token) # 토큰 블랙리스트에 추가
+        logout(request) # 로그아웃
+        return JsonResponse({'message': '로그아웃 성공'}, status=200)
+
+    except jwt.ExpiredSignatureError:
+        return JsonResponse({'message': '만료된 토큰입니다.'}, status=400)
+
+    except jwt.InvalidTokenError:
+        return JsonResponse({'message': '유효하지 않은 토큰입니다.'}, status=400)
+
+    return JsonResponse({'message': '로그아웃 실패'}, status=400)
 
 
-#todo 토큰 받아서 사용
+
 # 마이페이지 조회(/api/accounts/mypage)
-def Mypage(request, id):
+@csrf_exempt
+def Mypage(request):
     if validate_token(request): # 토큰
         if request == 'GET':
             try:
@@ -130,6 +148,14 @@ def Mypage(request, id):
                 'weight': user.weight
             }
             return JsonResponse(data, status=200)
+
+# 토큰 블랙리스트에 추가
+def invalidate_token(token):
+    BlacklistedToken.objects.create(token=token)
+
+# 토큰 블랙리스트 존재 여부
+def is_token_blacklisted(token):
+    return BlacklistedToken.objects.filter(token=token).exists()
 
 # (jwt)토큰 유효성 검증
 def validate_token(request):
