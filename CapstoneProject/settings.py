@@ -136,13 +136,12 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-    os.path.join(BASE_DIR, 'static/capstone-cra/public')
-    # os.path.join(BASE_DIR, 'static/capstone-cra/build'),
-    # os.path.join(BASE_DIR, 'static/capstone-cra/build/static'),
-    # os.path.join(BASE_DIR, 'static/capstone-cra/build/static/css'),
-    # os.path.join(BASE_DIR, 'static/capstone-cra/build/static/js'),
-    # os.path.join(BASE_DIR, 'static/capstone-cra/build/static/media'),
+    #os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'static/capstone-cra/build'),
+    os.path.join(BASE_DIR, 'static/capstone-cra/build/static'),
+    os.path.join(BASE_DIR, 'static/capstone-cra/build/static/css'),
+    os.path.join(BASE_DIR, 'static/capstone-cra/build/static/js'),
+    os.path.join(BASE_DIR, 'static/capstone-cra/build/static/media'),
 
 
 ]
