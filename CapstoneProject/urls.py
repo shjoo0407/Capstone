@@ -33,6 +33,12 @@ urlpatterns = [
     # path('accounts/', include('accounts.urls')),
     path('api/', Login, name='login'),#todo api 수정 필요
     path('', TemplateView.as_view(template_name='index.html')),
+    path('Login/', TemplateView.as_view(template_name='index.html')),
+    path('join/', TemplateView.as_view(template_name='index.html')),
+    path('Success/', TemplateView.as_view(template_name='index.html')),
+    path('calendar/', TemplateView.as_view(template_name='index.html')),
+    path('daily/', TemplateView.as_view(template_name='index.html')),
+    path('stats/', TemplateView.as_view(template_name='index.html')),
 ]
 
 #path('login/', serve, {'document_root': settings.STATIC_ROOT, 'path': 'capstone-cra/build/index.html'}),
