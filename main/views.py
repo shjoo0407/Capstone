@@ -71,7 +71,7 @@ def Statistics(request):
 
             userid = get_id_from_token(request)
 
-            galleries = Gallery.objects.all()
+            galleries = Gallery.objects.all(user=userid)
 
             aggregated_data={
                 'pro': defaultdict(int),
