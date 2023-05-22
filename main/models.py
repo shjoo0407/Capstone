@@ -15,6 +15,9 @@ class Gallery(models.Model):
     upload_date = models.DateField(auto_now_add=True)
     food_image = models.ImageField(upload_to=" #이미지 파일 디렉토리",blank=False, null = False)
 
+    class Meta:
+        managed = True
+
 
 
 
@@ -26,4 +29,6 @@ class Food(models.Model):
     pro = models.CharField(max_length=4)
     fat = models.CharField(max_length=4)
 
+    class Meta:
+        managed = True
 
