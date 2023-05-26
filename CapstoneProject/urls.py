@@ -18,31 +18,44 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
-from userinfo.views import UserList
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
+from django.views.generic import TemplateView
+from django.conf import settings
+from django.conf.urls.static import static
+from django.views.static import serve
+from accounts.views import Login
+import os
 
-schema_view = get_schema_view(
-    openapi.Info(
-        title="API 문서",
-        default_version="v1",
-        description="API 문서입니다.",
-        terms_of_service="https://www.google.com/policies/terms/",
-        contact=openapi.Contact(email="contact@contact.com"),
-        license=openapi.License(name="BSD License"),
-    ),
-    public=True,
-    permission_classes=[permissions.AllowAny],
-)
-
-#path('admin/', admin.site.urls),
-    #path('mydatabase/', UserList.as_view(), name='user-list'),
-    #path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 urlpatterns = [
-    path('fileupload/', include('fileupload.urls')),
     path('admin/', admin.site.urls),
-    path('mydatabase/', include('userinfo.urls')),
-    path('', include('fileupload.urls')),
-    path('account/', include('login.urls')),
+    # path('accounts/', include('accounts.urls')),
+    path('api/', Login, name='login'),#todo api 수정 필요
+    path('', TemplateView.as_view(template_name='index.html')),
+    path('Login/', TemplateView.as_view(template_name='index.html')),
+    path('join/', TemplateView.as_view(template_name='index.html')),
+    path('Success/', TemplateView.as_view(template_name='index.html')),
+    path('calendar/', TemplateView.as_view(template_name='index.html')),
+    path('daily/', TemplateView.as_view(template_name='index.html')),
+    path('stats/', TemplateView.as_view(template_name='index.html')),
 ]
+
+#path('login/', serve, {'document_root': settings.STATIC_ROOT, 'path': 'capstone-cra/build/index.html'}),
+
+
+#if settings.DEBUG:
+    #urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+#STATIC_URL = '/static/'
+
+#STATICFILES_DIRS = [
+    #os.path.join(BASE_DIR, 'static'),
+    #os.path.join(BASE_DIR, 'static/capstone-cra/build')
+#]
+
+#STATIC_ROOT = os.path.join(BASE_DIR, 'static', 'staticfiles')
+
+#STATICFILES_EXCLUDE = [
+    #'node_modules',
+#]

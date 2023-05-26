@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cal로리</title>
+    <link rel="stylesheet" href="../assets/css/reset.css" />
+    <link rel="stylesheet" href="../assets/css/styles.css" />
+    <link rel="stylesheet" href="../assets/css/login_page.css" />
+  </head>
+  <body>
+    <div class="container">
+      <!-- 고정헤더영역 -->
+      <div class="header">
+        <div class="common-inner header-content">
+          <div class="header_left">
+            <a href="./index.html" class="title">
+              <img src="../assets/images/main_icon.png" alt="홈 아이콘" />
+              <span>Cal로리</span>
+            </a>
+            <ul class="nav_list">
+              <li class="nav_item"><a href="./upload.html">식단 업로드</a></li>
+              <li class="nav_item"><a href="#">Daily 식단</a></li>
+              <li class="nav_item"><a href="#">식단 통계</a></li>
+            </ul>
+          </div>
+          <div class="header_right">
+            <span class="button login_btn">
+              <a href="./login.html">Login</a>
+            </span>
+            <span class="button join_btn"><a href="./join.html">Join</a></span>
+          </div>
+        </div>
+      </div>
+      <!-- // 고정헤더영역 -->
+
+      <!-- 메인 영역 -->
+      <div class="main">
+        <div class="login-content">
+          <div class="login-title">Cal로리에 로그인하기</div>
+          <form action="url" method="POST">
+            <ul class="login-list">
+              <li class="login-item">
+                <label for="id">아이디</label>
+                <input type="text" id="id" placeholder="아이디" />
+              </li>
+              <li class="login-item">
+                <label for="pw">비밀번호</label>
+                <input type="password" id="pw" placeholder="비밀번호" />
+              </li>
+            </ul>
+            <button type="submit" class="button submit-btn">
+              <a href="./success.html">Login</a>
+            </button>
+          </form>
+        </div>
+      </div>
+      <!-- // 메인영역 -->
+    </div>
+  </body>
+</html>
