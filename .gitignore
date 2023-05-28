@@ -1,0 +1,37 @@
+# created by virtualenv automatically
+venv/bin
+### Django ###
+*.log
+*.pot
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+.idea/
+
+.DS_Store
+
+# node_modules
+/static/capstone-cra/node_modules
+
+# staticfiles
+/static/staticfiles
+
+
+
+/capstone-cra/node_modules/
