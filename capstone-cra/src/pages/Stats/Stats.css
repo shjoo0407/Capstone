@@ -1,0 +1,19 @@
+.chart-nav {
+  display: flex;
+  margin-top: 30px;
+}
+
+.stats-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.chart-btn {
+  font-size: 14px;
+  width: 70px;
+  height: 26px;
+  border-radius: 15px;
+  margin-right: 10px;
+  background-color: #d0d0d0;
+}
