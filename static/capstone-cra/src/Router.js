@@ -6,6 +6,8 @@ import Join from "./pages/Join/Join";
 import Success from "./pages/Success/Success";
 import Upload from "./pages/Upload/Upload";
 import Calendar from "./pages/Upload/Calendar";
+import Stats from "./pages/Stats/Stats";
+import MyPage from "./pages/MyPage/MyPage";
 
 function Router() {
   return (
@@ -17,6 +19,8 @@ function Router() {
         <Route path="/success" element={<Success />} />
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/calendar/:formattedDate" element={<Upload />}></Route>
+        <Route path="/stats" element={<Stats />}></Route>
+        <Route path="/mypage" element={<MyPage />}></Route>
       </Routes>
     </BrowserRouter>
   );
