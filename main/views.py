@@ -15,7 +15,7 @@ def Upload(request):
             userid = get_id_from_token(request)
 
             # 모든 Gallery 객체를 조회합니다.
-            galleries = Gallery.objects.all(user=userid)
+            galleries = Gallery.objects.filter(user=userid)
             # 각 객체의 정보를 JSON 형식으로 변환합니다.
             data = [{'name': gallery.name,
                      'total': gallery.total,
@@ -61,7 +61,7 @@ def Daily(request):
 
             userid = get_id_from_token(request)
 
-            galleries = Gallery.objects.all(user=userid)
+            galleries = Gallery.objects.filter(user=userid)
 
             aggregated_data = {
                 'kcal': defaultdict(int),
@@ -84,7 +84,7 @@ def Daily(request):
                 'fat': [],
             }
 
-            for nutrient in ['kcal','pro', 'carbon', 'fat']:
+            for nutrient in ['kcal', 'pro', 'carbon', 'fat']:
                 for date, amount in aggregated_data[nutrient].items():
                     data[nutrient].append({'x': date, 'y': amount})
 
@@ -102,7 +102,7 @@ def Statistics(request):
 
             userid = get_id_from_token(request)
 
-            galleries = Gallery.objects.all(user=userid)
+            galleries = Gallery.objects.filter(user=userid)
 
             aggregated_data={
                 'pro': defaultdict(int),
