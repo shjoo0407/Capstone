@@ -5,6 +5,8 @@ import "./Upload.css";
 import HeaderNav from "../../components/Header/HeaderNav";
 import { Link, useParams } from "react-router-dom";
 
+import Chart from "../../services/Chart/Chart";
+
 function Upload() {
   const { formattedDate } = useParams();
   const year = String(formattedDate).substr(0, 4);
@@ -15,9 +17,12 @@ function Upload() {
   return (
     <div>
       <HeaderNav />
-      <div className="test">
-        {year}년 {month}월 {day}일의 upload page 입니다.
+      <div class="main upload-main">
+        <div class="common-inner main-content">
+          {year}년 {month}월 {day}일의 upload page 입니다.
+        </div>
       </div>
+      <Chart />
     </div>
   );
 }

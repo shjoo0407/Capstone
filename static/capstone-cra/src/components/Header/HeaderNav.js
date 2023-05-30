@@ -20,15 +20,12 @@ function HeaderNav() {
           </Link>
           <ul className="nav_list">
             <li className="nav_item">
-              {/* <a href="./upload.html">식단 업로드</a> */}
               <Link to="/calendar">식단 업로드</Link>
             </li>
             <li className="nav_item">
-              {/* <a href="#">Daily 식단</a> */}
               <Link to="/daily">Daily 식단</Link>
             </li>
             <li className="nav_item">
-              {/* <a href="#">식단 통계</a> */}
               <Link to="/stats">식단 통계</Link>
             </li>
           </ul>

@@ -79,7 +79,7 @@ function Login() {
           <form action="url" method="POST" onSubmit={handleFormSubmit}>
             <ul className="login-list">
               <li className="login-item">
-                <label for="id">아이디</label>
+                <label>아이디</label>
                 <input
                   type="text"
                   id="id"
@@ -90,7 +90,7 @@ function Login() {
                 <p style={{ color: "red" }}>{errorMessage}</p>
               </li>
               <li className="login-item">
-                <label for="pw">비밀번호</label>
+                <label>비밀번호</label>
                 <input
                   type="password"
                   id="pw"
