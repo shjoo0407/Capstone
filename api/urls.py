@@ -26,3 +26,4 @@ urlpatterns = [
     #path('main/stats/month1', # 식단 통계 페이지(1개월) 조회(GET)
     #path('main/stats/month3', # 식단 통계 페이지(3개월) 조회(GET)
     #path('main/stats/year', #식단 통계 페이지(1년) 조회(GET)
+]
