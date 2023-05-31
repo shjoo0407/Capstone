@@ -17,19 +17,36 @@ def Upload(request):
         if request.method == 'GET':
             userid = get_id_from_token(request)
 
-            # 모든 Gallery 객체를 조회합니다.
-            galleries = Gallery.objects.filter(user=userid)
-            # 각 객체의 정보를 JSON 형식으로 변환합니다.
-            data = [{'name': gallery.name,
-                     'total': gallery.total,
-                     'kcal': gallery.kcal,
-                     'protein': gallery.protein,
-                     'carbon': gallery.carbon,
-                     'fat': gallery.fat,
-                     'uploaded_at': gallery.uploaded_at} for gallery in galleries]
+            # Gallery 에서 날짜별 총 칼로리 섭취량 반환(ex date : 230531, total_calories : 2000)
+            aggregated_data = (
+                Gallery.objects.filter(user=userid)
+                .annotate(date=TruncDate('uploaded_at'))
+                .values('date')
+                .annotate(total_calories=Sum('kcal'))
+                .values('date', 'total_calories')
+            )
+
+            data = [
+                {
+                    'date': item['date'].strftime('%Y%m%d'),
+                    'total_calories': item['total_calories']
+                }
+                for item in aggregated_data
+            ]
+
+            # galleries = Gallery.objects.filter(user=userid)
+            # # 각 객체의 정보를 JSON 형식으로 변환합니다.
+            # data = [{'name': gallery.name,
+            #          'total': gallery.total,
+            #          'kcal': gallery.kcal,
+            #          'protein': gallery.protein,
+            #          'carbon': gallery.carbon,
+            #          'fat': gallery.fat,
+            #          'uploaded_at': gallery.uploaded_at} for gallery in galleries]
             # 결과를 반환합니다.
             return JsonResponse(data, safe=False, status=200)
 
+        # 파일 업로드
         elif request.method == "POST":
             #request_data = json.loads(request.body)
             name = request.POST.get('name')
