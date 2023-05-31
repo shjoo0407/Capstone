@@ -160,8 +160,9 @@ def Statistics(request):
 #todo(모델을 이용하여 이미지 분류)
 # 0. .mar 경로 : model/model_store/<.mar file>
 # 1. .mar 생성(torch-model-archiver --model-name <모델이름> --version <버전> --model-file <모델파일(.py)> --serialized-file <.pth파일> --handler <handler 파일> --export-path model/model_store/)
-# 2. torchseve 서버에 모델 등록&시작(torchserve --model-store model/model_store --models <모델이름>=model/model_store/<.mar파일> --start --host <localhost or 퍼블릭 IPv4 주소> --port <8080 or 80 or 443>)
-# 3. torchserve API 호출 후 등록된 모델에 이미지 넣어서 결과 확인
+# 2. torchserve 서버에 모델 등록(torchserve --model-store model/model_store --models <모델이름>=model/model_store/<.mar파일> --host <localhost or 퍼블릭 IPv4 주소> --port <8080 or 80 or 443>)
+# 3. torchserve 서버 시작/중지(torchserve --start // torchserve --stop)
+# 4. torchserve API 호출 후 등록된 모델에 이미지 넣어서 결과 확인
 
 # def prediction(image_path):
 #     # 이미지 파일 열기
