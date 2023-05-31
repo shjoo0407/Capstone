@@ -177,6 +177,7 @@ def Statistics(request):
 #     # 결과 확인
 #     if response.status_code == 200:
 #         result = response.json()
+#         print("성공")
 #         print(f"분류 결과 : {result}")
 #         return result
 #     else:
