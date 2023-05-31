@@ -25,20 +25,28 @@ from django.views.generic import TemplateView
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.static import serve
-from accounts.views import Login
+from accounts.views import *
 import os
 
 urlpatterns = [
+    # 관리자 페이지
     path('admin/', admin.site.urls),
-    # path('accounts/', include('accounts.urls')),
-    path('api/', Login, name='login'),#todo api 수정 필요
-    path('', TemplateView.as_view(template_name='index.html')),
-    path('Login/', TemplateView.as_view(template_name='index.html')),
-    path('join/', TemplateView.as_view(template_name='index.html')),
+
+    # API 요청
+    path('api/', include('api.urls')),
+
+    # 웹페이지
+    path('', TemplateView.as_view(template_name='index.html')), # 메인 화면
+    path('Login/', TemplateView.as_view(template_name='index.html')), # 로그인 화면
+    path('join/', TemplateView.as_view(template_name='index.html')), # 회원가입 화면
     path('Success/', TemplateView.as_view(template_name='index.html')),
+
+    # 식단 업로드
     path('calendar/', TemplateView.as_view(template_name='index.html')),
-    path('daily/', TemplateView.as_view(template_name='index.html')),
-    path('stats/', TemplateView.as_view(template_name='index.html')),
+    path('caldendar/<str:formattedData>/', TemplateView.as_view(template_name='index.html')), # 특정 날짜 선택
+
+    path('daily/', TemplateView.as_view(template_name='index.html')), # Daily 식단
+    path('stats/', TemplateView.as_view(template_name='index.html')), # 식단 통계
 ]
 
 #path('login/', serve, {'document_root': settings.STATIC_ROOT, 'path': 'capstone-cra/build/index.html'}),
