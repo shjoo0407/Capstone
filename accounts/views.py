@@ -30,18 +30,11 @@ def Register(request):
         height = request_data.get('height') # 키
         weight = request_data.get('weight') # 몸무게
 
-        if gender == 'male':
-            gender = 'M'
-        else:
-            gender = 'F'
-
-        print(f"id:{id}, password:{password}, name:{name}, birth:{birth}, gender:{gender}, height:{height}, weight:{weight}")
         account = get_user_model()
 
         try:
             # 이미 존재하는 아이디
-            if account.objects.filter(username=id).exists():
-                print("이미 존재하는 아이디")
+            if User.objects.filter(username=id).exists():
                 return JsonResponse({'message': '이미 존재하는 아이디'}, status=400)
 
             account.objects.create(
@@ -53,13 +46,11 @@ def Register(request):
                 height=height,
                 weight=weight
             )
-            print("회원가입 성공!")
             return JsonResponse({'message': '회원가입 성공'}, status=200)
 
         except Exception as e:
-            print("오류 발생")
             return JsonResponse({'message': '오류 발생'}, status=500)
-    print("잘못된 요청")
+
     return JsonResponse({'message': '잘못된 요청'}, status=400)
 
 
@@ -136,9 +127,7 @@ def Logout(request):
 # 마이페이지 조회(/api/accounts/mypage)
 @csrf_exempt
 def Mypage(request):
-    if validate_token(request): # 토큰 유효성 검증
-
-        # 마이페이지 조회
+    if validate_token(request): # 토큰
         if request == 'GET':
             try:
                 account = get_user_model() # Account
@@ -157,43 +146,6 @@ def Mypage(request):
                 'weight': user.weight
             }
             return JsonResponse(data, status=200)
-
-        # 회원 정보 수정
-        elif request == 'PUT':
-            try:
-                request_data = json.loads(request.body)
-
-                account = get_user_model() # Account 테이블 불러오기
-                userid = get_id_from_token(request) # jwt token에서 id(1,2,3,4....) 불러오기
-                user = account.objects.get(id=userid) # token에서 가져온 id로 회원 식별 -> 해당 id를 가진 user 정보
-
-                # 정보 수정
-                user.username = request_data.get('username', user.username) # 아이디
-                user.name = request_data.get('name', user.name) # 이름
-                user.birth = request_data.get('birth', user.birth) # 생년월일
-                user.gender = request_data.get('gender', user.gender) # 성별
-                user.height = request_data.get('height', user.height) # 키
-                user.weight = request_data.get('weight', user.weight) # 몸무게
-                user.save()
-
-                return JsonResponse({'message': '회원 정보 수정 성공'}, status=200)
-
-            except account.DoesNotExist:
-                return JsonResponse({'message': '해당 계정이 존재하지 않습니다.'}, status=404)
-
-        # 회원 정보 삭제
-        elif request == 'DELETE':
-            try:
-                account = get_user_model()
-                userid = get_id_from_token(request)
-                user = account.objects.get(id=userid)
-                user.delete() # 탈퇴
-
-                return JsonResponse({'message': '회원 탈퇴 성공'}, status=200)
-
-            except account.DoesNotExist:
-                return JsonResponse({'message': '해당 계정이 존재하지 않습니다.'}, status=404)
-
 
 # 토큰 블랙리스트에 추가
 def invalidate_token(token):

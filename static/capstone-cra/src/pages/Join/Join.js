@@ -16,7 +16,7 @@ function Join() {
     },
   };
 
-  const url = "api/accounts/register/";
+  const url = "api/";
 
   const [formData, setFormData] = useState({
     id: "",
@@ -42,7 +42,7 @@ function Join() {
 
     // Axios POST 요청 보내기
     axios
-      .post(url, formData)
+      .post("https://api.example.com/signup", formData)
       .then((response) => {
         console.log("회원가입 성공:", response.data);
         // 회원가입 성공 후 처리 로직 작성

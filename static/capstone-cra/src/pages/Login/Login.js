@@ -6,7 +6,7 @@ import HeaderNav from "../../components/Header/HeaderNav";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
-const url = "api/accounts/login/";
+const url = "api/";
 
 const jsonLocalStorage = {
   setItem: (key, value) => {
