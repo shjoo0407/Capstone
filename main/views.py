@@ -3,6 +3,7 @@ from accounts.views import validate_token
 from accounts.views import get_id_from_token
 from django.http import JsonResponse
 import json
+import requests
 from django.http import JsonResponse
 from .models import Gallery
 from collections import defaultdict
@@ -46,7 +47,7 @@ def Upload(request):
             # 결과를 반환합니다.
             return JsonResponse(data, safe=False, status=200)
 
-        # 파일 업로드
+        # 식단 업로드 버튼
         elif request.method == "POST":
             #request_data = json.loads(request.body)
             name = request.POST.get('name')
@@ -66,15 +67,15 @@ def Upload(request):
 
             return JsonResponse({'message': '성공적으로 업로드되었습니다.'}, status=200)
 
-    return JsonResponse({'message': '잘못된 요청'}, status=500)
+        return JsonResponse({'message': '잘못된 요청'}, status=500)
+
+    return JsonResponse({'message': '유효하지 않은 토큰'}, status=500)
 
 
 # todo 데일리 식단 페이지 조회
 def Daily(request):
-    data = {}
-    if request.method == 'GET':
-
-        if validate_token(request):
+    if validate_token(request):
+        if request.method == 'GET':
 
             userid = get_id_from_token(request)
 
@@ -88,7 +89,7 @@ def Daily(request):
             }
 
             for gallery in galleries:
-                date = gallery.uploaded_at.strftime("%Y-%m-%d")
+                date = gallery.uploaded_at.strftime("%Y%m%d")
                 aggregated_data['kcal'][date] += gallery.kcal
                 aggregated_data['pro'][date] += gallery.pro
                 aggregated_data['carbon'][date] += gallery.carbon
@@ -105,30 +106,28 @@ def Daily(request):
                 for date, amount in aggregated_data[nutrient].items():
                     data[nutrient].append({'x': date, 'y': amount})
 
-        return JsonResponse(data, safe=False)
-
-    return JsonResponse({'message': '잘못된 요청'}, status=500)
+            return JsonResponse(data, safe=False)
+        return JsonResponse({'message': '잘못된 요청'}, status=500)
+    return JsonResponse({'message': '유효하지 않은 토큰'}, status=500)
 
 
 # todo 식단 통계 페이지 조회
 def Statistics(request):
-    data = {}
-    if request.method == 'GET':
-
-        if validate_token(request):
+    if validate_token(request):
+        if request.method == 'GET':
 
             userid = get_id_from_token(request)
 
             galleries = Gallery.objects.filter(user=userid)
 
-            aggregated_data={
+            aggregated_data = {
                 'pro': defaultdict(int),
                 'carbon': defaultdict(int),
                 'fat': defaultdict(int)
             }
 
             for gallery in galleries:
-                date = gallery.uploaded_at.strftime("%Y-%m-%d")
+                date = gallery.uploaded_at.strftime("%Y%m%d")
                 aggregated_data['pro'][date] += gallery.pro
                 aggregated_data['carbon'][date] += gallery.carbon
                 aggregated_data['fat'][date] += gallery.fat
@@ -143,30 +142,43 @@ def Statistics(request):
                 for date, amount in aggregated_data[nutrient].items():
                     data[nutrient].append({'x': date, 'y': amount})
 
-        return JsonResponse(data, safe=False)
+            return JsonResponse(data, safe=False)
 
-    return JsonResponse({'message': '잘못된 요청'}, status=500)
+        return JsonResponse({'message': '잘못된 요청'}, status=500)
+
+    return JsonResponse({'message': '유효하지 않은 토큰'}, status=500)
 
 
 # todo 이미지 파일 업로드 &
-def FileUpload(request):
-    if request.method == 'POST':
-        if validate_token(request):
-            userid = get_id_from_token(request)
-        return
-    return JsonResponse({'message': '잘못된 요청'}, status=500)
+# def FileUpload(request):
+#     if request.method == 'POST':
+#         if validate_token(request):
+#             userid = get_id_from_token(request)
+#         return
+#     return JsonResponse({'message': '잘못된 요청'}, status=500)
 
 #todo(모델을 이용하여 이미지 분류)
-# 1. torchserve 설치
-# 2. handler file(preprocess, postprocess), .pt(model, parameter 저장),  생성
-# 3. .mar 생성(torch-model-archiver)
+# 0. .mar 경로 : model/model_store/<.mar file>
+# 1. .mar 생성(torch-model-archiver --model-name <모델이름> --version <버전> --model-file <모델파일(.py)> --serialized-file <.pth파일> --handler <handler 파일> --export-path model/model_store/)
+# 2. torchseve 서버에 모델 등록&시작(torchserve --model-store model/model_store --models <모델이름>=model/model_store/<.mar파일> --start --host <localhost or 퍼블릭 IPv4 주소> --port <8080 or 80 or 443>)
+# 3. torchserve API 호출 후 등록된 모델에 이미지 넣어서 결과 확인
 
-# def classify():
-#     model = torch.jit.load()
-#     image = Image.open()
-#     output = model(image)
+# def prediction(image_path):
+#     # 이미지 파일 열기
+#     with open(image_path, 'rb') as f:
+#         image_data = f.read() # 이미지
 #
-#     _, predicted_idx = torch.max(output,1)
-#     class_idx = predicted_idx.item()
+#     # torchserve API 호출
 #
-#     return class_idx
+#     url = 'http://localhost:8080/predictions/your_model_name'  # torchserve의 예측 엔드포인트 URL
+#     headers = {'Content-Type': 'application/octet-stream'}
+#     response = requests.post(url, headers=headers, data=image_data)
+#
+#     # 결과 확인
+#     if response.status_code == 200:
+#         result = response.json()
+#         print(f"분류 결과 : {result}")
+#         return result
+#     else:
+#         print("실패")
+#         return None
