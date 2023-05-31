@@ -1,12 +1,14 @@
 from django.urls import path
 from accounts import views as view1
 from main import views as view2
+
+
 urlpatterns = [
     # accounts(로그인, 로그아웃, 회원가입, 마이페이지 조회)
     path('accounts/login/', view1.Login, name='login'), # 로그인 요청(POST)
     path('accounts/logout/', view1.Logout, name='logout'), # 로그아웃 요청(POST)
-    #path('accounts/register/',views.Register, name='register'), # 회원가입 요청(POST)
-    #path('accounts/mypage/', view1.Mypage, name='mypage') # 마이페이지 조회(GET)
+    path('accounts/register/', view1.Register, name='register'), # 회원가입 요청(POST)
+    path('accounts/mypage/', view1.Mypage, name='mypage'), # 마이페이지 조회(GET), 회원 정보 수정(PUT), 회원 탈퇴(DELETE)
 
     # todo(식단 업로드 페이지 조회, Daily 식단 페이지 조회, 식단 통계 페이지 조회, 사진 업로드)
     # main
@@ -24,4 +26,3 @@ urlpatterns = [
     #path('main/stats/month1', # 식단 통계 페이지(1개월) 조회(GET)
     #path('main/stats/month3', # 식단 통계 페이지(3개월) 조회(GET)
     #path('main/stats/year', #식단 통계 페이지(1년) 조회(GET)
-]

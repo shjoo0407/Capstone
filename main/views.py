@@ -6,32 +6,49 @@ import json
 from django.http import JsonResponse
 from .models import Gallery
 from collections import defaultdict
+from django.db.models import Sum
+from django.db.models.functions import TruncDate
 
 # Create your views here.
 # todo 식단 업로드 페이지 조회
 def Upload(request):
-    if request.method == 'GET':
-        if validate_token(request):
+    if validate_token(request):
+        # '식단 업로드' 페이지 접속
+        if request.method == 'GET':
             userid = get_id_from_token(request)
 
-            # 모든 Gallery 객체를 조회합니다.
-            galleries = Gallery.objects.filter(user=userid)
-            # 각 객체의 정보를 JSON 형식으로 변환합니다.
-            data = [{'name': gallery.name,
-                     'total': gallery.total,
-                     'kcal': gallery.kcal,
-                     'protein': gallery.protein,
-                     'carbon': gallery.carbon,
-                     'fat': gallery.fat,
-                     'uploaded_at': gallery.uploaded_at} for gallery in galleries]
+            # Gallery 에서 날짜별 총 칼로리 섭취량 반환(ex date : 230531, total_calories : 2000)
+            aggregated_data = (
+                Gallery.objects.filter(user=userid)
+                .annotate(date=TruncDate('uploaded_at'))
+                .values('date')
+                .annotate(total_calories=Sum('kcal'))
+                .values('date', 'total_calories')
+            )
+
+            data = [
+                {
+                    'date': item['date'].strftime('%Y%m%d'),
+                    'total_calories': item['total_calories']
+                }
+                for item in aggregated_data
+            ]
+
+            # galleries = Gallery.objects.filter(user=userid)
+            # # 각 객체의 정보를 JSON 형식으로 변환합니다.
+            # data = [{'name': gallery.name,
+            #          'total': gallery.total,
+            #          'kcal': gallery.kcal,
+            #          'protein': gallery.protein,
+            #          'carbon': gallery.carbon,
+            #          'fat': gallery.fat,
+            #          'uploaded_at': gallery.uploaded_at} for gallery in galleries]
             # 결과를 반환합니다.
             return JsonResponse(data, safe=False, status=200)
 
-        return JsonResponse({'message: 잘못된 요청'}, status=500)
-
-    if validate_token(request):
-        if request.method == "POST":
-            # request_data = json.loads(request.body)
+        # 파일 업로드
+        elif request.method == "POST":
+            #request_data = json.loads(request.body)
             name = request.POST.get('name')
             total = request.POST.get('total')
             kcal = request.POST.get('kcal')
@@ -131,10 +148,25 @@ def Statistics(request):
     return JsonResponse({'message': '잘못된 요청'}, status=500)
 
 
-# todo 이미지 파일 업로드
+# todo 이미지 파일 업로드 &
 def FileUpload(request):
     if request.method == 'POST':
         if validate_token(request):
             userid = get_id_from_token(request)
         return
     return JsonResponse({'message': '잘못된 요청'}, status=500)
+
+#todo(모델을 이용하여 이미지 분류)
+# 1. torchserve 설치
+# 2. handler file(preprocess, postprocess), .pt(model, parameter 저장),  생성
+# 3. .mar 생성(torch-model-archiver)
+
+# def classify():
+#     model = torch.jit.load()
+#     image = Image.open()
+#     output = model(image)
+#
+#     _, predicted_idx = torch.max(output,1)
+#     class_idx = predicted_idx.item()
+#
+#     return class_idx
