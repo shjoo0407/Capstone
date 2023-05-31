@@ -12,9 +12,9 @@ from django.db.models.functions import TruncDate
 # Create your views here.
 # todo 식단 업로드 페이지 조회
 def Upload(request):
-    # '식단 업로드' 페이지 접속
-    if request.method == 'GET':
-        if validate_token(request):
+    if validate_token(request):
+        # '식단 업로드' 페이지 접속
+        if request.method == 'GET':
             userid = get_id_from_token(request)
 
             # 모든 Gallery 객체를 조회합니다.
@@ -30,10 +30,7 @@ def Upload(request):
             # 결과를 반환합니다.
             return JsonResponse(data, safe=False, status=200)
 
-        return JsonResponse({'message': '잘못된 요청'}, status=500)
-
-    if validate_token(request):
-        if request.method == "POST":
+        elif request.method == "POST":
             #request_data = json.loads(request.body)
             name = request.POST.get('name')
             total = request.POST.get('total')

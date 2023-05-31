@@ -32,7 +32,7 @@ urlpatterns = [
     # 관리자 페이지
     path('admin/', admin.site.urls),
 
-    # API 요청
+    # API 요청(/api 로 시작)
     path('api/', include('api.urls')),
 
     # 웹페이지
