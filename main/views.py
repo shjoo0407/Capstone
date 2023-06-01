@@ -150,12 +150,20 @@ def Statistics(request):
 
 
 # todo 이미지 파일 업로드 &
-# def FileUpload(request):
-#     if request.method == 'POST':
-#         if validate_token(request):
-#             userid = get_id_from_token(request)
-#         return
-#     return JsonResponse({'message': '잘못된 요청'}, status=500)
+def FileUpload(request):
+    if validate_token(request):
+        if request.method == 'POST':
+            userid = get_id_from_token(request)
+            food_image = request.FILES['food_image']
+
+            gallery = Gallery.objects.create(
+                user_id=userid,
+                food_image=food_image
+            )
+
+            return JsonResponse({'message':'Image uploaded successfully', 'id':gallery.image_id}, status=200)
+
+    return JsonResponse({'message': '잘못된 요청'}, status=500)
 
 #todo(모델을 이용하여 이미지 분류)
 # 0. .mar 경로 : model/model_store/<.mar file>
