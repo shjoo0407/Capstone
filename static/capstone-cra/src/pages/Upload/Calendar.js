@@ -97,7 +97,7 @@ const Calendar = () => {
               <span>{monthYearLabel}</span>
               <button onClick={goToNextMonth} class="btn-right">
                 <img
-                  class="arrow-img"
+                  className="arrow-img"
                   src={rightArrow}
                   alt="오른쪽 화살표 버튼"
                 />
