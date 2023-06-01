@@ -27,8 +27,13 @@ from django.conf.urls.static import static
 from django.views.static import serve
 from accounts.views import *
 import os
+from main import views
 
 urlpatterns = [
+    # 테스트
+    path('test/testapi/', views.test_view),
+    path('test/', TemplateView.as_view(template_name='testview.html')),
+
     # 관리자 페이지
     path('admin/', admin.site.urls),
 
@@ -47,7 +52,7 @@ urlpatterns = [
 
     path('daily/', TemplateView.as_view(template_name='index.html')), # Daily 식단
     path('stats/', TemplateView.as_view(template_name='index.html')), # 식단 통계
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 #path('login/', serve, {'document_root': settings.STATIC_ROOT, 'path': 'capstone-cra/build/index.html'}),
 
