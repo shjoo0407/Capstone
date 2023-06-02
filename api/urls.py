@@ -4,6 +4,8 @@ from main import views as view2
 
 
 urlpatterns = [
+
+
     # accounts(로그인, 로그아웃, 회원가입, 마이페이지 조회)
     path('accounts/login/', view1.Login, name='login'), # 로그인 요청(POST)
     path('accounts/logout/', view1.Logout, name='logout'), # 로그아웃 요청(POST)

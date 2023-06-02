@@ -191,23 +191,38 @@ def FileUpload(request):
 # 3. torchserve 서버 시작/중지(torchserve --start // torchserve --stop)
 # 4. torchserve API 호출 후 등록된 모델에 이미지 넣어서 결과 확인
 
-# def prediction(image_path):
-#     # 이미지 파일 열기
-#     with open(image_path, 'rb') as f:
-#         image_data = f.read() # 이미지
-#
-#     # torchserve API 호출
-#
-#     url = 'http://localhost:8080/predictions/your_model_name'  # torchserve의 예측 엔드포인트 URL
-#     headers = {'Content-Type': 'application/octet-stream'}
-#     response = requests.post(url, headers=headers, data=image_data)
-#
-#     # 결과 확인
-#     if response.status_code == 200:
-#         result = response.json()
-#         print("성공")
-#         print(f"분류 결과 : {result}")
-#         return result
-#     else:
-#         print("실패")
-#         return None
+def prediction(image_file):
+    # 이미지 파일 열기
+    # with open(image_path, 'rb') as f:
+    #     image_data = f.read() # 이미지
+
+    # torchserve API 호출
+    url = 'http://localhost:8080/predictions/your_model_name'  # torchserve의 예측 엔드포인트 URL
+    headers = {'Content-Type': 'application/octet-stream'}
+    response = requests.post(url, headers=headers, data=image_file)
+
+    # 결과 확인
+    if response.status_code == 200:
+        result = response.json()
+        print("성공")
+        print(f"분류 결과 : {result}")
+        return result
+    else:
+        print("실패")
+        return None
+
+
+# 테스트
+from .forms import ImageUploadForm
+from  django.conf import settings
+def test_view(request):
+    if request.method == 'POST':
+        form = ImageUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            image_file = form.cleaned_data['image']
+            image_url = settings.MEDIA_URL + image_file.name
+            print(f"image_file : {image_file}, image_url : {image_url}")
+        else:
+            form = ImageUploadForm()
+
+        return render(request, 'testview.html', {'form': form})
