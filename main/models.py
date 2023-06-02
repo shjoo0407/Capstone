@@ -13,7 +13,7 @@ class Gallery(models.Model):
     pro = models.CharField(max_length=4, blank=True, null=True) # 단백질
     fat = models.CharField(max_length=4, blank=True, null=True) # 지방
     upload_date = models.DateField(auto_now_add=True) # 이미지 업로드 날짜
-    food_image = models.ImageField(upload_to=" #이미지 파일 디렉토리",blank=True, null=True) # 음식 이미지 파일
+    food_image = models.ImageField(upload_to="media/", blank=True, null=True) # 음식 이미지 파일
 
     class Meta:
         managed = True
