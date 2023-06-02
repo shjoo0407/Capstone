@@ -157,11 +157,30 @@ def FileUpload(request):
             food_image = request.FILES['food_image']
 
             gallery = Gallery.objects.create(
-                user_id=userid,
+                user=userid,
                 food_image=food_image
             )
 
-            return JsonResponse({'message':'Image uploaded successfully', 'id':gallery.image_id}, status=200)
+            response = prediction(gallery.food_image.path)
+            result = response.json()
+
+            gallery.name = result['name']
+            gallery.total = result['total']
+            gallery.kcal = result['kcal']
+            gallery.pro = result['pro']
+            gallery.carbon = result['carbon']
+            gallery.fat = result['fat']
+            gallery.save()
+
+            return JsonResponse({'message':'Image uploaded successfully',
+                                 'id': gallery.image_id,
+                                 'name': result['name'],
+                                 'total': result['total'],
+                                 'kcal': result['kcal'],
+                                 'pro': result['pro'],
+                                 'carbon': result['carbon'],
+                                 'fat': result['fat'],
+                                 }, status=200)
 
     return JsonResponse({'message': '잘못된 요청'}, status=500)
 
