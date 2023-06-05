@@ -16,7 +16,7 @@ urlpatterns = [
     # main
     # 식단 업로드 페이지
     path('main/upload/', view2.Upload, name='upload'), # 식단 업로드 페이지 조회(GET)
-    #path('main/upload/{date}/' # 식단 업로드 -> 날짜 선택(해당 날짜의 식단(메뉴들), 칼/탄/단/지), 업로드 후에는)
+    path('main/upload/{date}/', view2.UploadDate, name='upload_date'), # 식단 업로드 -> 날짜 선택(해당 날짜의 식단(메뉴들), 칼/탄/단/지), 업로드 후에는)
     #path('main/daily/{date}/fileupload', # todo 식단 업로드 -> 날짜 선택 -> 파일 업로드 버튼 클릭
 
     # Daily 식단 페이지(todo)
@@ -24,7 +24,7 @@ urlpatterns = [
     #path('main/daily/{date}/',  # #todo Daily 식단 -> 날짜 선택(해당 날짜의 칼/탄/단/지 그래프)(GET)
 
     # 식단 통계 페이지(todo)
-    #path('main/stats/', view2.Statistics, name='stats'), # 식단 통계 페이지(일주일) 조회(GET)
+    path('main/stats/', view2.Statistics, name='stats'), # 식단 통계 페이지(일주일) 조회(GET)
     #path('main/stats/month1', # 식단 통계 페이지(1개월) 조회(GET)
     #path('main/stats/month3', # 식단 통계 페이지(3개월) 조회(GET)
     #path('main/stats/year', #식단 통계 페이지(1년) 조회(GET)
