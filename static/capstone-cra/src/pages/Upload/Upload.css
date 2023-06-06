@@ -1,0 +1,120 @@
+.upload-content {
+  display: flex;
+}
+
+.upload-container {
+  width: 1280px;
+  padding: 0px 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.upload-container .container-sub {
+  width: 580px;
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+}
+
+/* 왼쪽 part */
+
+.upload-left-container {
+  display: flex;
+  flex-direction: column;
+}
+
+/* upload box part */
+.upload-box {
+  border: 2px solid #a3a3a3;
+  border-radius: 14px;
+  padding: 10px 20px;
+  height: 380px;
+  overflow: scroll;
+  position: relative;
+}
+
+.upload-date {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.upload-img-info {
+  display: flex;
+}
+
+.upload-img {
+  flex: 1;
+}
+
+.upload-img img {
+  width: 220px;
+  height: 200px;
+  object-fit: cover;
+}
+
+.upload-img input {
+  width: 260px;
+}
+
+.upload-info {
+  flex: 1;
+}
+
+.upload-info .food-info {
+  display: flex;
+  align-items: flex-end;
+  overflow: auto;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+.upload-info .food-name {
+  font-size: 18px;
+  overflow: auto;
+  margin-right: 8px;
+}
+
+.cal-info {
+  margin-bottom: 2px;
+}
+
+.modified-name {
+  margin-top: 4px;
+}
+
+.upload-buttons button {
+  /* background-color: rgb(60, 179, 113); */
+  background-color: #0080ff;
+  width: 540px;
+  color: rgb(255, 255, 255);
+  display: inline-block;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  /*padding: 8px 32px;*/
+  border-radius: 5px;
+  font-weight: 600;
+  position: absolute;
+  bottom: 20px;
+}
+
+/* menu box part */
+.menu-box {
+  border: 2px solid #a3a3a3;
+  border-radius: 14px;
+  padding: 10px 20px;
+  overflow: scroll;
+  margin-top: 20px;
+}
+
+.menu-box-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+/* 오른쪽 part */
+
+.upload-right-container {
+  background-color: tomato;
+}

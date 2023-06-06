@@ -53,6 +53,9 @@ function Login() {
       .post(url, data)
       .then((response) => {
         console.log(response.data);
+        const token = response.data.token;
+        jsonLocalStorage.setItem("token", token);
+        console.log(jsonLocalStorage.getItem("token"));
       })
       .catch((error) => {
         console.error(error);
