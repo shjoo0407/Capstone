@@ -8,8 +8,7 @@ import MenuList from "../../components/MenuList/MenuList";
 import dummyImg from "../../assets/img/dummy.png";
 import { Link, useParams } from "react-router-dom";
 
-import Chart from "../../services/Chart/Chart";
-
+// upload 컴포넌트
 function Upload() {
   const { formattedDate } = useParams();
   const year = String(formattedDate).substr(0, 4);

@@ -6,6 +6,7 @@ import HeaderNav from "../../components/Header/HeaderNav";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
+// 회원가입 page
 function Join() {
   const jsonLocalStorage = {
     setItem: (key, value) => {
@@ -16,8 +17,10 @@ function Join() {
     },
   };
 
+  // api url
   const url = "api/";
 
+  // form data 상태관리
   const [formData, setFormData] = useState({
     id: "",
     password: "",
@@ -28,14 +31,16 @@ function Join() {
     weight: "",
   });
 
-  // form state 설정 필요
+  // 회원가입 form은 2개, 다음 form으로 넘어갈 수 있도록 상태관리
   const [form1Visible, setForm1Visible] = useState(true);
   const [form2Visible, setForm2Visible] = useState(false);
 
+  // input 값 변경 시, form data setting
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // 제출 버튼 클릭 시 이벤트
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log({ ...formData });
@@ -53,6 +58,7 @@ function Join() {
       });
   };
 
+  // 다음 form으로 이동
   const goToNextForm = (e) => {
     setForm1Visible(false);
     setForm2Visible(true);
