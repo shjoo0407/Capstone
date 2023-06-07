@@ -5,7 +5,6 @@ import "./Calendar.css";
 import leftArrow from "../../assets/img/left-arrow.png";
 import rightArrow from "../../assets/img/right-arrow.png";
 import HeaderNav from "../../components/Header/HeaderNav";
-// import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 const Calendar = () => {
@@ -30,7 +29,7 @@ const Calendar = () => {
     setCurrentDate(nextMonth);
   };
 
-  // 날짜 클릭 시 페이지 라우팅
+  // 날짜 클릭 시 페이지 라우팅 (/calendar/해당날짜)
   const handleDateClick = (year, month, day) => {
     const formattedDate = `${year}${month.toString().padStart(2, "0")}${day
       .toString()
@@ -87,15 +86,19 @@ const Calendar = () => {
   return (
     <div>
       <HeaderNav />
-      <div class="main">
-        <div class="common-inner main-content">
-          <div class="month-container">
+      <div className="main">
+        <div className="common-inner main-content">
+          <div className="month-container">
             <div className="calendar-header">
-              <button onClick={goToPreviousMonth} class="btn-left">
-                <img class="arrow-img" src={leftArrow} alt="왼쪽 화살표 버튼" />
+              <button onClick={goToPreviousMonth} className="btn-left">
+                <img
+                  className="arrow-img"
+                  src={leftArrow}
+                  alt="왼쪽 화살표 버튼"
+                />
               </button>
               <span>{monthYearLabel}</span>
-              <button onClick={goToNextMonth} class="btn-right">
+              <button onClick={goToNextMonth} className="btn-right">
                 <img
                   className="arrow-img"
                   src={rightArrow}
