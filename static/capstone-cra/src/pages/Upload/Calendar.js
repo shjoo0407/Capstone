@@ -86,15 +86,19 @@ const Calendar = () => {
   return (
     <div>
       <HeaderNav />
-      <div class="main">
-        <div class="common-inner main-content">
-          <div class="month-container">
+      <div className="main">
+        <div className="common-inner main-content">
+          <div className="month-container">
             <div className="calendar-header">
-              <button onClick={goToPreviousMonth} class="btn-left">
-                <img class="arrow-img" src={leftArrow} alt="왼쪽 화살표 버튼" />
+              <button onClick={goToPreviousMonth} className="btn-left">
+                <img
+                  className="arrow-img"
+                  src={leftArrow}
+                  alt="왼쪽 화살표 버튼"
+                />
               </button>
               <span>{monthYearLabel}</span>
-              <button onClick={goToNextMonth} class="btn-right">
+              <button onClick={goToNextMonth} className="btn-right">
                 <img
                   className="arrow-img"
                   src={rightArrow}

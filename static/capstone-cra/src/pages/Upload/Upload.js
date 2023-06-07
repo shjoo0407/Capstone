@@ -42,11 +42,10 @@ function Upload() {
     if (!selectedFile) {
       return;
     }
-
     const formData = new FormData();
     formData.append("photo", selectedFile);
 
-    fetch("api/upload", {
+    fetch("api/upload/", {
       method: "POST",
       body: formData,
     })
