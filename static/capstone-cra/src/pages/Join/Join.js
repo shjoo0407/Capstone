@@ -3,7 +3,7 @@ import "../../styles/reset.css";
 import "../../styles/common.css";
 import "./Join.css";
 import HeaderNav from "../../components/Header/HeaderNav";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 // 회원가입 page
@@ -19,6 +19,8 @@ function Join() {
 
   // api url
   const url = "api/";
+
+  const navigate = useNavigate();
 
   // form data 상태관리
   const [formData, setFormData] = useState({
@@ -50,6 +52,7 @@ function Join() {
       .post("https://api.example.com/signup", formData)
       .then((response) => {
         console.log("회원가입 성공:", response.data);
+        navigate("/success");
         // 회원가입 성공 후 처리 로직 작성
       })
       .catch((error) => {
