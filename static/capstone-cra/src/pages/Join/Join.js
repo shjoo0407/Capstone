@@ -18,7 +18,8 @@ function Join() {
   };
 
   // api url
-  const url = "api/";
+  const url = "api/accounts/register";
+
 
   const navigate = useNavigate();
 
@@ -49,7 +50,7 @@ function Join() {
 
     // Axios POST 요청 보내기
     axios
-      .post("https://api.example.com/signup", formData)
+      .post(url, formData)
       .then((response) => {
         console.log("회원가입 성공:", response.data);
         navigate("/success");

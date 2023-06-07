@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test View</title>
+</head>
+<body>
+    <!-- 이미지 -->
+    <div>
+        <form method="post" action="/test/testapi/" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">이미지 업로드</button>
+        </form>
+
+        {% if image_url %}
+            <img src="{{ image_url.url }}" alt="Uploaded Image">
+        {% endif %}
+    </div>
+
+    <!-- 버튼 -->
+    <div>
+
+    </div>
+
+    <!-- 텍스트 -->
+    <div>
+
+    </div>
+</body>
+</html>
