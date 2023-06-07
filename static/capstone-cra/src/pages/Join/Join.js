@@ -16,7 +16,7 @@ function Join() {
     },
   };
 
-  const url = "api/accounts/register";
+  const url = "api/accounts/register/";
 
   const [formData, setFormData] = useState({
     id: "",
