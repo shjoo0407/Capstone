@@ -8,8 +8,7 @@ import MenuList from "../../components/MenuList/MenuList";
 import dummyImg from "../../assets/img/dummy.png";
 import { Link, useParams } from "react-router-dom";
 
-import Chart from "../../services/Chart/Chart";
-
+// upload 컴포넌트
 function Upload() {
   const { formattedDate } = useParams();
   const year = String(formattedDate).substr(0, 4);
@@ -20,6 +19,7 @@ function Upload() {
   const [previewURL, setPreviewURL] = useState("");
   const [foodName, setFoodName] = useState("");
   const [calories, setCalories] = useState("");
+  const [nextForm, setNextForm] = useState(false);
 
   // test용 menu item
   const menuItems = [
@@ -30,6 +30,7 @@ function Upload() {
     { id: 5, name: "무언가" },
   ];
 
+  // 파일 입력 시 미리보기로 보여줌
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
@@ -41,18 +42,19 @@ function Upload() {
     if (!selectedFile) {
       return;
     }
-
     const formData = new FormData();
     formData.append("photo", selectedFile);
 
-    fetch("api/upload", {
+    fetch("api/upload/", {
       method: "POST",
       body: formData,
     })
       .then((response) => response.json())
       .then((data) => {
-        setFoodName(data.foodName);
-        setCalories(data.calories);
+        console.log(data);
+        // setFoodName(data.foodName);
+        // setCalories(data.calories);
+        setNextForm(true);
       })
       .catch((error) => console.error("Error:", error));
   };
@@ -73,7 +75,10 @@ function Upload() {
       body: formData,
     })
       .then((response) => response.json())
-      .then((data) => console.log("Upload successful:", data))
+      .then((data) => {
+        console.log("Upload successful:", data);
+        setNextForm(false);
+      })
       .catch((error) => console.error("Error:", error));
   };
 
@@ -102,21 +107,29 @@ function Upload() {
                     <input type="file" onChange={handleFileChange} />
                   </div>
                   {/* 나중에 변수 하나 만들어서 보일 거 안 보일 거로.. 해야 함 */}
-                  <div className="upload-info">
-                    <div className="food-info">
-                      <div className="food-name">
-                        {foodName || "닭가슴살 샐러드 "}
+                  {nextForm && (
+                    <div className="upload-info">
+                      <div className="food-info">
+                        <div className="food-name">
+                          {foodName || "닭가슴살 샐러드 "}
+                        </div>
+                        <div className="food-cal">{calories || "820kcal"}</div>
                       </div>
-                      <div className="food-cal">{calories || "820kcal"}</div>
+                      <div className="cal-info">탄수화물 {"190g"}</div>
+                      <div className="cal-info">단백질 {"20g"}</div>
                     </div>
-                    <div className="cal-info">탄수화물 {"190g"}</div>
-                    <div className="cal-info">단백질 {"20g"}</div>
-                  </div>
+                  )}
                 </div>
-                <div className="modified-name">수정 이름 칸: </div>
                 <div className="upload-buttons">
-                  <button onClick={handleUpload}>다음 단계</button>
-                  <button onClick={handleResultUpload}>결과 제출하기</button>
+                  {nextForm && (
+                    <div className="modified-name">수정 이름 칸: </div>
+                  )}
+                  {!nextForm && (
+                    <button onClick={handleUpload}>다음 단계</button>
+                  )}
+                  {nextForm && (
+                    <button onClick={handleResultUpload}>결과 제출하기</button>
+                  )}
                 </div>
               </div>
               <div className="menu-box">
