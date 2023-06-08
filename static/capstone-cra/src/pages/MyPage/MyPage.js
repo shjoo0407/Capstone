@@ -89,6 +89,34 @@ function MyPage() {
     }
   };
 
+  // 회원탈퇴
+  const handleDelete = () => {
+    const token = jsonLocalStorage.getItem("token");
+    if (!token) {
+      console.error("토큰이 없습니다.");
+      return;
+    }
+
+    const apiUrl = "/accounts/mypage/";
+    fetch(apiUrl, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          console.log("DELETE 요청 성공");
+          // 필요한 처리 로직을 추가합니다.
+        } else {
+          console.error("DELETE 요청 실패");
+        }
+      })
+      .catch((error) => {
+        console.error("DELETE 요청 오류:", error);
+      });
+  };
+
   return (
     <div>
       <HeaderNav />
@@ -134,7 +162,12 @@ function MyPage() {
             </div>
             <div className="userinfo-title"></div>
             <div className="delete-box">
-              <button className="userinfo-btn delete-account">회원탈퇴</button>
+              <button
+                className="userinfo-btn delete-account"
+                onClick={handleDelete}
+              >
+                회원탈퇴
+              </button>
             </div>
           </div>
         </div>
