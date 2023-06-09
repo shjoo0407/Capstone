@@ -5,10 +5,24 @@ import "./Calendar.css";
 import leftArrow from "../../assets/img/left-arrow.png";
 import rightArrow from "../../assets/img/right-arrow.png";
 import HeaderNav from "../../components/Header/HeaderNav";
+import LoginHeaderNav from "../../components/Header/LoginHeaderNav";
+
 import { useNavigate } from "react-router-dom";
 
 const Calendar = () => {
   const navigate = useNavigate();
+
+  const jsonLocalStorage = {
+    setItem: (key, value) => {
+      localStorage.setItem(key, JSON.stringify(value));
+    },
+    getItem: (key) => {
+      return JSON.parse(localStorage.getItem(key));
+    },
+  };
+
+  const username = jsonLocalStorage.getItem("username");
+
   const [currentDate, setCurrentDate] = useState(new Date());
 
   // 이전 달로 이동
@@ -85,7 +99,9 @@ const Calendar = () => {
 
   return (
     <div>
-      <HeaderNav />
+      {username && <LoginHeaderNav username={username} />}
+      {!username && <HeaderNav />}
+
       <div className="main">
         <div className="common-inner main-content">
           <div className="month-container">

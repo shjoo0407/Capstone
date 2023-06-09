@@ -3,6 +3,8 @@ import "../../styles/reset.css";
 import "../../styles/common.css";
 import "./Upload.css";
 import HeaderNav from "../../components/Header/HeaderNav";
+import LoginHeaderNav from "../../components/Header/LoginHeaderNav";
+
 import Uploader from "../../components/Uploader/Uploader";
 import MenuList from "../../components/MenuList/MenuList";
 import dummyImg from "../../assets/img/dummy.png";
@@ -10,6 +12,16 @@ import { Link, useParams } from "react-router-dom";
 
 // upload 컴포넌트
 function Upload() {
+  const jsonLocalStorage = {
+    setItem: (key, value) => {
+      localStorage.setItem(key, JSON.stringify(value));
+    },
+    getItem: (key) => {
+      return JSON.parse(localStorage.getItem(key));
+    },
+  };
+
+  const username = jsonLocalStorage.getItem("username");
   const { formattedDate } = useParams();
   const year = String(formattedDate).substr(0, 4);
   const month = String(formattedDate).substr(4, 2);
@@ -84,7 +96,8 @@ function Upload() {
 
   return (
     <div>
-      <HeaderNav />
+      {username && <LoginHeaderNav username={username} />}
+      {!username && <HeaderNav />}
       <div className="main upload-main">
         <div className="common-inner upload-content">
           <div className="upload-container">

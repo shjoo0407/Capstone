@@ -3,6 +3,8 @@ import "../../styles/reset.css";
 import "../../styles/common.css";
 import "./MyPage.css";
 import HeaderNav from "../../components/Header/HeaderNav";
+import LoginHeaderNav from "../../components/Header/LoginHeaderNav";
+
 import { Link } from "react-router-dom";
 
 function UserInfoContent(props) {
@@ -25,6 +27,8 @@ function MyPage() {
       return JSON.parse(localStorage.getItem(key));
     },
   };
+
+  const username = jsonLocalStorage.getItem("username");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -119,7 +123,8 @@ function MyPage() {
 
   return (
     <div>
-      <HeaderNav />
+      {username && <LoginHeaderNav username={username} />}
+      {!username && <HeaderNav />}
       <div className="main stats-main">
         <div className="common-inner main-content mypage-content">
           <div className="mypage-title">{userInfo.name || "무언가"} 님</div>

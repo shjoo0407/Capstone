@@ -6,10 +6,8 @@ import HeaderNav from "../../components/Header/HeaderNav";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
-
 // api url
 const url = "api/accounts/login";
-
 
 const jsonLocalStorage = {
   setItem: (key, value) => {
@@ -61,8 +59,13 @@ function Login() {
         // data 출력, token을 localStorage에 저장
         console.log(response.data);
         const token = response.data.token;
+        const username = response.data.name;
         jsonLocalStorage.setItem("token", token);
+        // 사용자 이름 localStorage에 저장
+        jsonLocalStorage.setItem("username", username);
+
         console.log(jsonLocalStorage.getItem("token"));
+        console.log(jsonLocalStorage.getItem("username"));
       })
       .catch((error) => {
         console.error(error);

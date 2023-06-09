@@ -8,6 +8,7 @@ import Upload from "./pages/Upload/Upload";
 import Calendar from "./pages/Upload/Calendar";
 import Stats from "./pages/Stats/Stats";
 import MyPage from "./pages/MyPage/MyPage";
+import Daily from "./pages/Daily/Daily";
 
 function Router() {
   return (
@@ -21,6 +22,7 @@ function Router() {
         <Route path="/calendar/:formattedDate" element={<Upload />}></Route>
         <Route path="/stats" element={<Stats />}></Route>
         <Route path="/mypage" element={<MyPage />}></Route>
+        <Route path="/daily" element={<Daily />}></Route>
       </Routes>
     </BrowserRouter>
   );
