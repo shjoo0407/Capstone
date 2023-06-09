@@ -116,5 +116,30 @@
 /* 오른쪽 part */
 
 .upload-right-container {
-  background-color: tomato;
+  /* background-color: tomato; */
+  display: flex;
+  flex-direction: column;
+  padding-top: 60px;
+  padding-left: 20px;
+}
+.nutrition-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.nutrition-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.nutrition-item .title {
+  font-weight: bold;
+  display: inline-block;
+  width: 80px;
+  text-align: right;
+}
+
+.nutrition-item .content {
+  margin-left: 14px;
 }

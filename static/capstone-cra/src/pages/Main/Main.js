@@ -3,13 +3,26 @@ import "../../styles/reset.css";
 import "../../styles/common.css";
 import "./Main.css";
 import HeaderNav from "../../components/Header/HeaderNav";
+import LoginHeaderNav from "../../components/Header/LoginHeaderNav";
 import MainImg from "../../assets/img/main_img.png";
 import { Link } from "react-router-dom";
 
 function Main() {
+  const jsonLocalStorage = {
+    setItem: (key, value) => {
+      localStorage.setItem(key, JSON.stringify(value));
+    },
+    getItem: (key) => {
+      return JSON.parse(localStorage.getItem(key));
+    },
+  };
+
+  const username = jsonLocalStorage.getItem("username");
+
   return (
     <div>
-      <HeaderNav />
+      {username && <LoginHeaderNav username={username} />}
+      {!username && <HeaderNav />}
       <div className="main">
         <div className="common-inner main-content">
           <div className="slogan slogan-main">
