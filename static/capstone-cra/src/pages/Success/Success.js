@@ -5,6 +5,8 @@ import "./Success.css";
 import HeaderNav from "../../components/Header/HeaderNav";
 import LoginHeaderNav from "../../components/Header/LoginHeaderNav";
 
+import CalorieBarChart from "../../components/CalorieBarChart/CalorieBarChart";
+
 import { Link } from "react-router-dom";
 
 function Success() {
@@ -23,6 +25,7 @@ function Success() {
       {username && <LoginHeaderNav username={username} />}
       {!username && <HeaderNav />}
       <div className="test">Success 페이지 입니다.</div>
+      <CalorieBarChart perc="72%" color="tomato" />
     </div>
   );
 }
