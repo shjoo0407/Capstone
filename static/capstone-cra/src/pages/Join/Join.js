@@ -17,6 +17,7 @@ function Join() {
     },
   };
 
+
   // api url
   const url = "api/accounts/register";
 
