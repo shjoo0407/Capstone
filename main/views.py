@@ -9,6 +9,8 @@ from .models import Gallery
 from collections import defaultdict
 from django.db.models import Sum
 from django.db.models.functions import TruncDate
+from accounts.models import Account
+from datetime import date
 
 # Create your views here.
 # todo 식단 업로드 페이지 조회
@@ -115,7 +117,8 @@ def UploadDate(request, date=None):
     if validate_token(request):
         if request.method == 'GET':
             userid = get_id_from_token(request)
-
+            # 권장 섭취량
+            recommended = calculator(userid) # 권장 섭취량([칼로리, 탄수화물, 단백질, 지방])
             # 날짜별 각 음식의 영양소 정보
             food_data = (
                 Gallery.objects.filter(user=userid, uploaded_date=date)
@@ -133,14 +136,33 @@ def UploadDate(request, date=None):
                 )
                 .values('total_kcal', 'total_pro', 'total_carbon', 'total_fat')[0]
             )
-
+            menulist = Gallery.objects.filter(user=userid).order_by('upload_date').values_list('name', flat=True)
+            # data = {
+            #     'date': date,
+            #     'total_kcal': aggregated_data['total_kcal'],
+            #     'total_pro': aggregated_data['total_pro'],
+            #     'total_carbon': aggregated_data['total_carbon'],
+            #     'total_fat': aggregated_data['total_fat'],
+            #     'foods': list(food_data)
+            # }
             data = {
-                'date': date,
-                'total_kcal': aggregated_data['total_kcal'],
-                'total_pro': aggregated_data['total_pro'],
-                'total_carbon': aggregated_data['total_carbon'],
-                'total_fat': aggregated_data['total_fat'],
-                'foods': list(food_data)
+                'menulist': menulist,
+                'Calorie': {
+                    'Recommended': recommended[0],
+                    'Actual': aggregated_data['total_kcal'],
+                },
+                'Carbonhydrate': {
+                    'Recommended': recommended[1],
+                    'Actual': aggregated_data['total_carbon'],
+                },
+                'Protein': {
+                    'Recommended': recommended[2],
+                    'Actual': aggregated_data['total_protein'],
+                },
+                'Fat': {
+                    'Recommended': recommended[3],
+                    'Actual': aggregated_data['total_fat'],
+                },
             }
 
             return JsonResponse(data, safe=False, status=200)
@@ -342,7 +364,39 @@ def read_json_file(file_path):
         data = json.load(json_file)
         return data
 
+def calculator(userid): # 권장 섭취량(칼로리, 탄수화물, 단백질, 지방) 계산기
+    user = Account.objects.get(id=userid)
+    today = date.today()
+    type(today)
 
+    gender, birth, height, weight = user.gender, user.birth, user.height, user.weight
+    birth_year, birth_month, birth_day = str(birth).split('-')[0], str(birth).split('-')[1], str(birth).split('-')[2]
+
+    # 나이 계산
+    if today.month > int(birth_month) or (today.month == int(birth_month) and today.day >= int(birth_day)):
+        age = today.year - int(birth_year)
+    else:
+        age = today.year - int(birth_year) - 1
+
+    # 칼로리
+    # BMR 계산(해리스-베네딕트 공식)
+    if gender == 'M':
+        BMR = 66 + (13.7 * weight) + (5 * height) - (6.5 * age)
+    else:
+        BMR = 655 + (9.6 * weight) + (1.8 * height) - (4.7 * age)
+
+    # 일일 권장 섭취 칼로리(보통 활동 수준 기준으로 BMR * 1.5)
+    rec_kcal = int(BMR * 1.5)
+
+    # 탄수화물(전체 섭취량의 50%)
+    rec_carbon = int(rec_kcal / 2 / 4)
+
+    # 단백질(보통 몸무게 1kg 당 1g)
+    rec_pro = int(weight)
+
+    # 지방(전체 섭취량의 25%)
+    rec_fat = int(rec_kcal / 0.25 / 9)
+    return [rec_kcal, rec_carbon, rec_pro, rec_fat]
 # 테스트
 from .forms import ImageUploadForm
 from  django.conf import settings
@@ -357,3 +411,4 @@ def test_view(request):
             form = ImageUploadForm()
 
         return render(request, 'testview.html', {'form': form})
+
