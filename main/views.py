@@ -66,10 +66,11 @@ def Upload(request):
     #             return JsonResponse({'message': '이미지 파일이 필요합니다.'}, status=400)
     #
     #         return JsonResponse({'message': '성공적으로 업로드되었습니다.'}, status=200)
-    #
-    #     return JsonResponse({'message': '잘못된 요청'}, status=500)
-    #
-    # return JsonResponse({'message': '유효하지 않은 토큰'}, status=500)
+        else:
+            return JsonResponse({'message': '잘못된 요청'}, status=500)
+    else:
+
+        return JsonResponse({'message': '유효하지 않은 토큰'}, status=500)
 
 
 # todo 데일리 식단 페이지 조회
@@ -117,13 +118,13 @@ def UploadDate(request, date=None):
 
             # 날짜별 각 음식의 영양소 정보
             food_data = (
-                Gallery.objects.filter(user=userid, uploaded_at__date=date)
+                Gallery.objects.filter(user=userid, uploaded_date=date)
                 .values('name', 'kcal', 'protein', 'carbon', 'fat')
             )
 
             # 날짜별 각 영양소의 총합
             aggregated_data = (
-                Gallery.objects.filter(user=userid, uploaded_at__date=date)
+                Gallery.objects.filter(user=userid, upload_date=date)
                 .annotate(
                     total_kcal=Sum('kcal'),
                     total_pro=Sum('protein'),
@@ -255,6 +256,42 @@ def Statistics(request):
 #                                  }, status=200)
 #
 #     return JsonResponse({'message': '잘못된 요청'}, status=500)
+
+def ImageUpload(request):
+    if validate_token(request):
+        if request.method == "POST":
+            userid = get_id_from_token(request)
+            food_image = request.FILES.get('food_image')
+            if food_image:
+                # Create a new Gallery entry with the image
+                gallery = Gallery.objects.create(user=userid, food_image=food_image)
+
+                # Process the image
+                response = prediction(gallery.food_image.path)
+                result = response.json()
+
+                # Update the Gallery entry with the image data
+                gallery.name = result['name']
+                gallery.total = result['total']
+                gallery.kcal = result['kcal']
+                gallery.pro = result['pro']
+                gallery.carbon = result['carbon']
+                gallery.fat = result['fat']
+                gallery.save()
+
+                return JsonResponse({
+                    'message': 'Image uploaded successfully',
+                    'id': gallery.image_id,
+                    'name': result['name'],
+                    'total': result['total'],
+                    'kcal': result['kcal'],
+                    'pro': result['pro'],
+                    'carbon': result['carbon'],
+                    'fat': result['fat'],
+                }, status=200)
+
+            else:
+                return JsonResponse({'message': '이미지 파일이 필요합니다.'}, status=400)
 
 #todo(모델을 이용하여 이미지 분류)
 # 0. .mar 경로 : model/model_store/<.mar file>
