@@ -3,7 +3,7 @@ import "../../styles/reset.css";
 import "../../styles/common.css";
 import "./Login.css";
 import HeaderNav from "../../components/Header/HeaderNav";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 // api url
@@ -25,6 +25,7 @@ function Login() {
   const [errorMessage, setErrorMessage] = React.useState("");
 
   const includesHangul = (text) => /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/i.test(text);
+  const navigate = useNavigate();
 
   // input 값이 변할 때: 한글이 있는지 확인, id setting
   function handleInputChange(e) {
@@ -66,6 +67,7 @@ function Login() {
 
         console.log(jsonLocalStorage.getItem("token"));
         console.log(jsonLocalStorage.getItem("username"));
+        navigate("/calendar");
       })
       .catch((error) => {
         console.error(error);

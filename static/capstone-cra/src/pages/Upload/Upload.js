@@ -22,6 +22,7 @@ function Upload() {
     },
   };
 
+  const token = localStorage.getItem("token");
   const username = jsonLocalStorage.getItem("username"); // localStorage의 사용자 이름 가져오기
   const { formattedDate } = useParams(); // params의 현재 날짜 가져오기 format: 00000000
 
@@ -59,10 +60,13 @@ function Upload() {
   // 해당 날짜의 식단 리스트와 섭취한 영양성분 가져오기
   const fetchData = async () => {
     try {
-      const calMenu = await fetch(
-        "서버의_API_URL/칼로리_및_메뉴_가져오기_엔드포인트"
-        // API_URL에 params의 data 추가해서 넣으면 될듯
-      );
+      const calMenu = await fetch("...", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      // API_URL에 params의 data 추가해서 넣으면 될듯
       const calMenuData = await calMenu.json();
       console.log(calMenuData);
 
@@ -104,15 +108,19 @@ function Upload() {
       const formData = new FormData();
       formData.append("photo", selectedFile);
 
-      const response = await fetch("api/upload", {
+      const response = await fetch("../api/main/upload/imageupload", {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         body: formData,
       });
 
       if (response.ok) {
         const data = await response.json();
-        setFoodName(data.foodName); // 사진의 이름
-        setCalories(data.calories); // 사진의 칼로리
+        console.log(data);
+        // setFoodName(data.foodName); // 사진의 이름
+        // setCalories(data.calories); // 사진의 칼로리
         setNextForm(true); // 다음 form으로 전환 (최종 업로드 form으로 전환)
         setUploadStatus("업로드 완료");
       } else {
@@ -234,7 +242,8 @@ function Upload() {
               <div className="menu-box">
                 <div className="menu-box-title">식단</div>
                 <div className="menu">
-                  <MenuList menuItems={menuList} />
+                  {/* <MenuList menuItems={menuList} /> */}
+                  <MenuList menuItems={menuItems} />
                 </div>
               </div>
             </div>
@@ -281,6 +290,21 @@ function Upload() {
                       width="320"
                       percent="0.84"
                       color="rgb(122, 168, 116)"
+                    />
+                    <span className="content">
+                      {/* {nutritions && nutritions.calorie}/1280kcal */}
+                      59/70g
+                    </span>
+                  </li>
+                  <li className="nutrition-item">
+                    <span className="title">
+                      {/* {nutritions && nutritions.calorie} */}
+                      지방
+                    </span>
+                    <CalorieBarChart
+                      width="320"
+                      percent="0.6"
+                      color="rgb(235, 176, 45)"
                     />
                     <span className="content">
                       {/* {nutritions && nutritions.calorie}/1280kcal */}
