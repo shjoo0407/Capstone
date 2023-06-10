@@ -306,7 +306,7 @@ def prediction(image_path):
         image_data = f.read() # 이미지
 
     # torchserve API 호출
-    url = 'http://localhost:8080/predictions/your_model_name'  # torchserve의 예측 엔드포인트 URL
+    url = 'http://localhost:8080/predictions/model1'  # torchserve의 예측 엔드포인트 URL
     headers = {'Content-Type': 'application/octet-stream'}
     response = requests.post(url, headers=headers, data=image_data)
 
@@ -329,7 +329,7 @@ def prediction(image_path):
             label = label_data[key], prob = result[key]
             top5[label] = prob
 
-        top5_json = json.dumps(top5)
+        top5_json = json.dumps(top5) # json 파일로 변경
         print("성공")
         print(f"분류 결과 : {top5_json}")
         return result
