@@ -1,15 +1,13 @@
 import React from "react";
 import "../../styles/reset.css";
 import "../../styles/common.css";
-import "./Stats.css";
+import "./Daily.css";
 import HeaderNav from "../../components/Header/HeaderNav";
 import LoginHeaderNav from "../../components/Header/LoginHeaderNav";
 
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-import Chart from "../../services/Chart/Chart";
-
-function Stats() {
+function Daily() {
   const jsonLocalStorage = {
     setItem: (key, value) => {
       localStorage.setItem(key, JSON.stringify(value));
@@ -19,22 +17,13 @@ function Stats() {
     },
   };
   const username = jsonLocalStorage.getItem("username");
+
   return (
     <div>
       {username && <LoginHeaderNav username={username} />}
       {!username && <HeaderNav />}
-      <div className="main stats-main">
-        <div className="common-inner main-content stats-content">
-          <div className="chart-nav">
-            <button className="chart-btn">일주일</button>
-            <button className="chart-btn">1달</button>
-            <button className="chart-btn">3달</button>
-            <button className="chart-btn">1년</button>
-          </div>
-          <Chart />
-        </div>
-      </div>
+      <div className="test">Daily 페이지 입니다.</div>
     </div>
   );
 }
-export default Stats;
+export default Daily;

@@ -3,6 +3,8 @@ import "../../styles/reset.css";
 import "../../styles/common.css";
 import "./MyPage.css";
 import HeaderNav from "../../components/Header/HeaderNav";
+import LoginHeaderNav from "../../components/Header/LoginHeaderNav";
+
 import { Link } from "react-router-dom";
 
 function UserInfoContent(props) {
@@ -25,6 +27,8 @@ function MyPage() {
       return JSON.parse(localStorage.getItem(key));
     },
   };
+
+  const username = jsonLocalStorage.getItem("username");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -89,9 +93,38 @@ function MyPage() {
     }
   };
 
+  // 회원탈퇴
+  const handleDelete = () => {
+    const token = jsonLocalStorage.getItem("token");
+    if (!token) {
+      console.error("토큰이 없습니다.");
+      return;
+    }
+
+    const apiUrl = "/accounts/mypage/";
+    fetch(apiUrl, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          console.log("DELETE 요청 성공");
+          // 필요한 처리 로직을 추가합니다.
+        } else {
+          console.error("DELETE 요청 실패");
+        }
+      })
+      .catch((error) => {
+        console.error("DELETE 요청 오류:", error);
+      });
+  };
+
   return (
     <div>
-      <HeaderNav />
+      {username && <LoginHeaderNav username={username} />}
+      {!username && <HeaderNav />}
       <div className="main stats-main">
         <div className="common-inner main-content mypage-content">
           <div className="mypage-title">{userInfo.name || "무언가"} 님</div>
@@ -134,7 +167,12 @@ function MyPage() {
             </div>
             <div className="userinfo-title"></div>
             <div className="delete-box">
-              <button className="userinfo-btn delete-account">회원탈퇴</button>
+              <button
+                className="userinfo-btn delete-account"
+                onClick={handleDelete}
+              >
+                회원탈퇴
+              </button>
             </div>
           </div>
         </div>
