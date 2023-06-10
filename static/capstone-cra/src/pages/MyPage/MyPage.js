@@ -114,11 +114,11 @@ function MyPage() {
         .then((response) => response.json())
         .then((data) => {
           console.log("PUT 요청 응답:", data);
+          fetchData();
         })
         .catch((error) => {
           console.error("PUT 요청 오류:", error);
         });
-      fetchData();
     }
   };
 

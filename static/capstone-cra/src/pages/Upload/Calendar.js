@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../../styles/reset.css";
 import "../../styles/common.css";
 import "./Calendar.css";
@@ -12,6 +12,9 @@ import { useNavigate } from "react-router-dom";
 const Calendar = () => {
   const navigate = useNavigate();
 
+  const API_URL = "api/main/upload/";
+  // date(000000), total_calories
+
   const jsonLocalStorage = {
     setItem: (key, value) => {
       localStorage.setItem(key, JSON.stringify(value));
@@ -22,8 +25,38 @@ const Calendar = () => {
   };
 
   const username = jsonLocalStorage.getItem("username");
-
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = jsonLocalStorage.getItem("token");
+        // 토큰 유무 확인
+        if (!token) {
+          throw new Error("토큰이 없습니다.");
+        }
+
+        const response = await fetch(API_URL, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const responseJson = await response.json();
+          setData(responseJson);
+          console.log(data);
+        } else {
+          throw new Error("GET 요청에 실패했습니다.");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // 이전 달로 이동
   const goToPreviousMonth = () => {
@@ -62,13 +95,26 @@ const Calendar = () => {
     const month = currentDate.getMonth();
 
     const daysInMonth = getDaysInMonth(year, month);
-    const firstDayOfWeek = new Date(year, month, 1).getDay();
+    const firstDayOfWeek = new Date(year, month, 1).getDay(); // 요일 반환
+    console.log("firstDayOfWeek", firstDayOfWeek);
 
     const calendarData = [];
+    console.log(calendarData);
+
+    // 서버 get 요청 용 formatted date (00000000)
+    const getFormattedDate = (year, month, day) => {
+      const formattedDate = `${year.toString().substr(2, 2)}${month
+        .toString()
+        .padStart(2, "0")}${day.toString().padStart(2, "0")}`;
+      return formattedDate;
+    };
 
     // 이전 달의 날짜
     for (let i = firstDayOfWeek - 1; i >= 0; i--) {
       const day = new Date(year, month, -i);
+      console.log(
+        getFormattedDate(day.getFullYear(), day.getMonth() + 1, day.getDate()) // 현재 날짜 format: 000000
+      );
       calendarData.push({
         year: day.getFullYear(),
         month: day.getMonth() + 1,
