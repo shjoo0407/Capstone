@@ -323,7 +323,7 @@ def prediction(image_path):
         sorted_data = sorted(result.items(), key=lambda x: x[1], reverse=True) # value 값으로 정렬
         sorted_keys = [item[0] for item in sorted_data]
 
-        label_data = read_json_file('model/model_label.json')
+        label_data = read_json_file('../model/model_label.json')
         top5 = {}
         for key in sorted_keys:
             label = label_data[key], prob = result[key]
