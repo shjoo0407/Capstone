@@ -108,7 +108,7 @@ function Upload() {
       const formData = new FormData();
       formData.append("photo", selectedFile);
 
-      const response = await fetch("../api/main/upload/imageupload", {
+      const response = await fetch("../api/main/upload/imageupload/", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -188,6 +188,32 @@ function Upload() {
     }
   };
 
+  // delete 버튼 클릭 시
+
+  const [deleteStatus, setDeleteStatus] = useState("");
+
+  const handleDelete = (menuId) => {
+    fetch(`api/menu/${menuId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      // 다시 컴포넌트 불러와야 함.
+      .then((response) => {
+        if (response.ok) {
+          setDeleteStatus("메뉴가 삭제되었습니다.");
+          fetchData(); // menu list 다시 불러옴
+        } else {
+          setDeleteStatus("메뉴 삭제 실패");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        setDeleteStatus("메뉴 삭제 실패");
+      });
+  };
+
   return (
     <div>
       {username && <LoginHeaderNav username={username} />}
@@ -243,7 +269,7 @@ function Upload() {
                 <div className="menu-box-title">식단</div>
                 <div className="menu">
                   {/* <MenuList menuItems={menuList} /> */}
-                  <MenuList menuItems={menuItems} />
+                  <MenuList menuItems={menuItems} handleDelete={handleDelete} />
                 </div>
               </div>
             </div>
