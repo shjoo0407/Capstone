@@ -117,7 +117,7 @@ def Login(request):
 def Logout(request):
     jwt_token = request.META.get('HTTP_AUTHORIZATION').split(' ')[1]
     try:
-        decoded_token = jwt.decode(jwt_token, SECRET_KEY, algorithms=['HS256'])
+        #decoded_token = jwt.decode(jwt_token, SECRET_KEY, algorithms=['HS256'])
         if is_token_blacklisted(jwt_token):
             return JsonResponse({'message': '이미 로그아웃된 토큰입니다'}, status=400)
 
