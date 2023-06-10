@@ -149,19 +149,19 @@ def UploadDate(request, date=None):
                 'menulist': menulist,
                 'Calorie': {
                     'Recommended': recommended[0],
-                    'Actual': aggregated_data['total_kcal'],
+                    'Actual': int(aggregated_data['total_kcal']),
                 },
                 'Carbonhydrate': {
                     'Recommended': recommended[1],
-                    'Actual': aggregated_data['total_carbon'],
+                    'Actual': int(aggregated_data['total_carbon']),
                 },
                 'Protein': {
                     'Recommended': recommended[2],
-                    'Actual': aggregated_data['total_protein'],
+                    'Actual': int(aggregated_data['total_protein']),
                 },
                 'Fat': {
                     'Recommended': recommended[3],
-                    'Actual': aggregated_data['total_fat'],
+                    'Actual': int(aggregated_data['total_fat']),
                 },
             }
 
