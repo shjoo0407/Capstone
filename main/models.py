@@ -18,9 +18,11 @@ class Gallery(models.Model):
     class Meta:
         managed = True
 
-
-
-
+    def __str__(self):
+        if self.name:
+            return str(self.name)
+        else:
+            return str('')
 # 식품영양정보 DB의 음식
 class Food(models.Model):
     name = models.CharField(max_length=30) # 음식 이름
