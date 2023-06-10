@@ -300,25 +300,47 @@ def ImageUpload(request):
 # 3. torchserve 서버 시작/중지(torchserve --start // torchserve --stop)
 # 4. torchserve API 호출 후 등록된 모델에 이미지 넣어서 결과 확인
 
-def prediction(image_file):
+def prediction(image_path):
     # 이미지 파일 열기
-    # with open(image_path, 'rb') as f:
-    #     image_data = f.read() # 이미지
+    with open(image_path, 'rb') as f:
+        image_data = f.read() # 이미지
 
     # torchserve API 호출
     url = 'http://localhost:8080/predictions/your_model_name'  # torchserve의 예측 엔드포인트 URL
     headers = {'Content-Type': 'application/octet-stream'}
-    response = requests.post(url, headers=headers, data=image_file)
+    response = requests.post(url, headers=headers, data=image_data)
 
     # 결과 확인
     if response.status_code == 200:
         result = response.json()
+        # ex) result = {
+        #   "53": 0.9821317195892334,
+        #   "125": 0.016887102276086807,
+        #   "58": 0.0008895615465007722,
+        #   "81": 5.9507572586881e-05,
+        #   "123": 1.2144737411290407e-05
+        # }
+        sorted_data = sorted(result.items(), key=lambda x: x[1], reverse=True) # value 값으로 정렬
+        sorted_keys = [item[0] for item in sorted_data]
+
+        label_data = read_json_file('model/model_label.json')
+        top5 = {}
+        for key in sorted_keys:
+            label = label_data[key], prob = result[key]
+            top5[label] = prob
+
+        top5_json = json.dumps(top5)
         print("성공")
-        print(f"분류 결과 : {result}")
+        print(f"분류 결과 : {top5_json}")
         return result
     else:
         print("실패")
         return None
+
+def read_json_file(file_path):
+    with open(file_path, 'r') as json_file:
+        data = json.load(json_file)
+        return data
 
 
 # 테스트
