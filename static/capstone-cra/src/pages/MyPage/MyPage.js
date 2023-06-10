@@ -40,7 +40,7 @@ function MyPage() {
           throw new Error("토큰이 없습니다.");
         }
 
-        const apiUrl = "api/mypage/";
+        const apiUrl = "api/accounts/mypage/";
         const response = await fetch(apiUrl, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -66,7 +66,7 @@ function MyPage() {
     const token = jsonLocalStorage.getItem("token");
     const userInput = prompt("수정할 내용을 입력하세요.");
     if (userInput !== null) {
-      const apiUrl = "/accounts/mypage/"; // PUT 요청을 보낼 API 엔드포인트 URL
+      const apiUrl = "api/accounts/mypage/"; // PUT 요청을 보낼 API 엔드포인트 URL
       const requestData = {
         // 요청 데이터에 포함할 내용
         type: type,
@@ -101,7 +101,7 @@ function MyPage() {
       return;
     }
 
-    const apiUrl = "/accounts/mypage/";
+    const apiUrl = "api/accounts/mypage/";
     fetch(apiUrl, {
       method: "DELETE",
       headers: {
@@ -127,22 +127,36 @@ function MyPage() {
       {!username && <HeaderNav />}
       <div className="main stats-main">
         <div className="common-inner main-content mypage-content">
-          <div className="mypage-title">{userInfo.name || "무언가"} 님</div>
+          <div className="mypage-title">
+            {(userInfo && userInfo.name) || "무언가"} 님
+          </div>
           <div className="userinfo-container">
             <div className="userinfo-box">
               <div className="userinfo-title">기본정보</div>
-              <UserInfoContent label="아이디" value={userInfo.id || "아이디"} />
-              <UserInfoContent label="이름" value={userInfo.name || "무언가"} />
+              <UserInfoContent
+                label="아이디"
+                value={(userInfo && userInfo.id) || "아이디"}
+              />
+              <UserInfoContent
+                label="이름"
+                value={(userInfo && userInfo.name) || "무언가"}
+              />
               <UserInfoContent
                 label="생년월일"
-                value={userInfo.birthdate || "생년월일"}
+                value={(userInfo && userInfo.birthdate) || "생년월일"}
               />
-              <UserInfoContent label="성별" value={userInfo.gender || "성별"} />
+              <UserInfoContent
+                label="성별"
+                value={(userInfo && userInfo.gender) || "성별"}
+              />
             </div>
             <div className="userinfo-box">
               <div className="userinfo-title">신체정보</div>
               <div className="info-with-btn">
-                <UserInfoContent label="키" value={userInfo.height || "키"} />
+                <UserInfoContent
+                  label="키"
+                  value={(userInfo && userInfo.height) || "키"}
+                />
                 <button
                   className="userinfo-btn"
                   value="height"
@@ -154,7 +168,7 @@ function MyPage() {
               <div className="info-with-btn">
                 <UserInfoContent
                   label="몸무게"
-                  value={userInfo.weight || "몸무게"}
+                  value={(userInfo && userInfo.weight) || "몸무게"}
                 />
                 <button
                   className="userinfo-btn"
