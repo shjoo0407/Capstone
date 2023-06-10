@@ -30,6 +30,33 @@ function MyPage() {
 
   const username = jsonLocalStorage.getItem("username");
 
+  const fetchData = async () => {
+    try {
+      const token = jsonLocalStorage.getItem("token");
+
+      // 토큰 유무 확인
+      if (!token) {
+        throw new Error("토큰이 없습니다.");
+      }
+
+      const apiUrl = "api/accounts/mypage/";
+      const response = await fetch(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        setUserInfo(responseData);
+      } else {
+        throw new Error("GET 요청에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("GET 요청 오류:", error);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -79,6 +106,7 @@ function MyPage() {
       fetch(apiUrl, {
         method: "PUT",
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(requestData),
@@ -90,6 +118,7 @@ function MyPage() {
         .catch((error) => {
           console.error("PUT 요청 오류:", error);
         });
+      fetchData();
     }
   };
 
