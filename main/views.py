@@ -147,21 +147,21 @@ def UploadDate(request, date=None):
             # }
             data = {
                 'menulist': menulist,
-                'Calorie': {
-                    'Recommended': recommended[0],
-                    'Actual': int(aggregated_data['total_kcal']),
+                'calorie': {
+                    'recommended': recommended[0],
+                    'actual': int(aggregated_data['total_kcal']),
                 },
-                'Carbonhydrate': {
-                    'Recommended': recommended[1],
-                    'Actual': int(aggregated_data['total_carbon']),
+                'carbonhydrate': {
+                    'recommended': recommended[1],
+                    'actual': int(aggregated_data['total_carbon']),
                 },
-                'Protein': {
-                    'Recommended': recommended[2],
-                    'Actual': int(aggregated_data['total_protein']),
+                'protein': {
+                    'recommended': recommended[2],
+                    'actual': int(aggregated_data['total_protein']),
                 },
-                'Fat': {
-                    'Recommended': recommended[3],
-                    'Actual': int(aggregated_data['total_fat']),
+                'fat': {
+                    'recommended': recommended[3],
+                    'actual': int(aggregated_data['total_fat']),
                 },
             }
 
@@ -397,7 +397,14 @@ def calculator(userid): # 권장 섭취량(칼로리, 탄수화물, 단백질, �
     # 지방(전체 섭취량의 25%)
     rec_fat = int(rec_kcal / 0.25 / 9)
     return [rec_kcal, rec_carbon, rec_pro, rec_fat]
-# 테스트
+
+
+
+
+
+
+
+# 테스트(안쓸듯)
 from .forms import ImageUploadForm
 from  django.conf import settings
 def test_view(request):
