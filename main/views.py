@@ -329,7 +329,7 @@ def prediction(image_path):
             label = label_data[key], prob = result[key]
             top5[label] = prob
 
-        top5_json = json.dumps(top5) # json 파일로 변경
+        top5_json = json.dumps(top5) # json 파일로 변환
         print("성공")
         print(f"분류 결과 : {top5_json}")
         return result
