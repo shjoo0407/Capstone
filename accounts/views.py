@@ -81,7 +81,7 @@ def Login(request):
             login(request, user)
 
             # 토큰 생성
-            expired = datetime.datetime.utcnow() + datetime.timedelta(minutes=5) # 만료 시간
+            expired = datetime.datetime.utcnow() + datetime.timedelta(minutes=1440) # 만료 시간
             payload = {
                 'userid': user.id,
                 'exp': expired,
@@ -137,21 +137,27 @@ def Logout(request):
 @csrf_exempt
 def Mypage(request):
     if validate_token(request): # 토큰 유효성 검증
+        try:
+            account = get_user_model()  # Account
+            userid = get_id_from_token(request)  # 토큰에서 userid 가져옴
+            user = account.objects.get(id=userid)
+        except account.DoesNotExist:
+            return JsonResponse({'message': '해당 계정이 존재하지 않습니다.'}, status=404)
 
         # 마이페이지 조회
-        if request == 'GET':
-            try:
-                account = get_user_model() # Account
-                userid = get_id_from_token(request) # 토큰에서 userid 가져옴
-                user = account.objects.get(id=userid)
-            except account.DoesNotExist:
-                return JsonResponse({'message': '해당 계정이 존재하지 않습니다.'}, status=404)
+        if request.method == 'GET':
+            # try:
+            #     account = get_user_model() # Account
+            #     userid = get_id_from_token(request) # 토큰에서 userid 가져옴
+            #     user = account.objects.get(id=userid)
+            # except account.DoesNotExist:
+            #     return JsonResponse({'message': '해당 계정이 존재하지 않습니다.'}, status=404)
 
             data = {
                 'message': '마이페이지 조회 성공',
                 'id': user.username,
                 'name': user.name,
-                'birth': user.birth,
+                'birthdate': user.birth,
                 'gender': user.gender,
                 'height': user.height,
                 'weight': user.weight
@@ -159,21 +165,24 @@ def Mypage(request):
             return JsonResponse(data, status=200)
 
         # 회원 정보 수정
-        elif request == 'PUT':
+        elif request.method == 'PUT':
             try:
                 request_data = json.loads(request.body)
 
-                account = get_user_model() # Account 테이블 불러오기
-                userid = get_id_from_token(request) # jwt token에서 id(1,2,3,4....) 불러오기
-                user = account.objects.get(id=userid) # token에서 가져온 id로 회원 식별 -> 해당 id를 가진 user 정보
+                # account = get_user_model() # Account 테이블 불러오기
+                # userid = get_id_from_token(request) # jwt token에서 id(1,2,3,4....) 불러오기
+                # user = account.objects.get(id=userid) # token에서 가져온 id로 회원 식별 -> 해당 id를 가진 user 정보
 
                 # 정보 수정
-                user.username = request_data.get('username', user.username) # 아이디
-                user.name = request_data.get('name', user.name) # 이름
-                user.birth = request_data.get('birth', user.birth) # 생년월일
-                user.gender = request_data.get('gender', user.gender) # 성별
-                user.height = request_data.get('height', user.height) # 키
-                user.weight = request_data.get('weight', user.weight) # 몸무게
+                data_type = request_data.get('type', None)  # 데이터 타입 가져오기 (height, weight)
+                if data_type == 'height':
+                    user.height = request_data.get('data', user.height)  # 키
+                elif data_type == 'weight':
+                    user.weight = request_data.get('data', user.weight)  # 몸무게
+                user.username = request_data.get('username', user.username)  # 아이디
+                user.name = request_data.get('name', user.name)  # 이름
+                user.birth = request_data.get('birthdate', user.birth)  # 생년월일
+                user.gender = request_data.get('gender', user.gender)  # 성별
                 user.save()
 
                 return JsonResponse({'message': '회원 정보 수정 성공'}, status=200)
@@ -182,17 +191,21 @@ def Mypage(request):
                 return JsonResponse({'message': '해당 계정이 존재하지 않습니다.'}, status=404)
 
         # 회원 정보 삭제
-        elif request == 'DELETE':
+        elif request.method == 'DELETE':
             try:
-                account = get_user_model()
-                userid = get_id_from_token(request)
-                user = account.objects.get(id=userid)
+                # account = get_user_model()
+                # userid = get_id_from_token(request)
+                # user = account.objects.get(id=userid)
                 user.delete() # 탈퇴
 
                 return JsonResponse({'message': '회원 탈퇴 성공'}, status=200)
 
             except account.DoesNotExist:
                 return JsonResponse({'message': '해당 계정이 존재하지 않습니다.'}, status=404)
+        else:
+            return JsonResponse({'message': '잘못된 요청 메소드입니다.'}, status=405)
+    else:
+        return JsonResponse({'message': '토큰 검증에 실패했습니다.'}, status=401)
 
 
 # 토큰 블랙리스트에 추가
