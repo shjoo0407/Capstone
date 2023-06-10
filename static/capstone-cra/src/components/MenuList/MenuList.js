@@ -4,27 +4,27 @@ import cutleryIcon from "../../assets/img/cutlery.png";
 import deleteIcon from "../../assets/img/delete.png";
 
 // upload 페이지의 menu list
-const MenuList = ({ menuItems }) => {
+const MenuList = ({ menuItems, handleDelete }) => {
   const [deleteStatus, setDeleteStatus] = useState("");
 
   // delete 버튼 클릭 시
-  const handleDelete = (menuId) => {
-    fetch(`api/menu/${menuId}`, {
-      method: "DELETE",
-    })
-      // 다시 컴포넌트 불러와야 함.
-      .then((response) => {
-        if (response.ok) {
-          setDeleteStatus("메뉴가 삭제되었습니다.");
-        } else {
-          setDeleteStatus("메뉴 삭제 실패");
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        setDeleteStatus("메뉴 삭제 실패");
-      });
-  };
+  // const handleDelete = (menuId) => {
+  //   fetch(`api/menu/${menuId}`, {
+  //     method: "DELETE",
+  //   })
+  //     // 다시 컴포넌트 불러와야 함.
+  //     .then((response) => {
+  //       if (response.ok) {
+  //         setDeleteStatus("메뉴가 삭제되었습니다.");
+  //       } else {
+  //         setDeleteStatus("메뉴 삭제 실패");
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error:", error);
+  //       setDeleteStatus("메뉴 삭제 실패");
+  //     });
+  // };
 
   return (
     <div>
