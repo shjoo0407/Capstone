@@ -1,0 +1,20 @@
+.progress-bar {
+  height: 20px;
+  background-color: rgb(233, 233, 233);
+  /* font-weight: 600;
+  font-size: 0.8rem; */
+  border-radius: 14px;
+  /* border: 1px solid #000; */
+}
+
+.progress-bar .progress {
+  height: 20px;
+  padding: 0;
+  text-align: center;
+  background-color: rgb(62, 122, 235);
+  color: #111;
+  border-radius: 14px;
+  /* border: 1px solid #000; */
+  transition: 0.5s ease;
+  transition-delay: 0.2s;
+}

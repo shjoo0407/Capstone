@@ -1,0 +1,37 @@
+.menu-item {
+  background-color: red;
+  display: flex;
+  height: 30px;
+  width: 540px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  border-radius: 8px;
+  background-color: rgb(224, 224, 224);
+  padding: 0px 10px;
+}
+
+.menu-item-left {
+  display: flex;
+  align-items: center;
+}
+
+.menu-item-right {
+  display: flex;
+  align-items: center;
+}
+
+.menu-item img {
+  width: 18px;
+  height: 18px;
+  margin-right: 6px;
+}
+
+.menu-item input {
+  background: url("../../assets/img/delete.png") no-repeat;
+  background-size: 20px;
+  border: none;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}

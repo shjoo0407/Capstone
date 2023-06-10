@@ -6,6 +6,7 @@ import HeaderNav from "../../components/Header/HeaderNav";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
+// api url
 const url = "api/accounts/login";
 
 const jsonLocalStorage = {
@@ -18,12 +19,14 @@ const jsonLocalStorage = {
 };
 
 function Login() {
+  // 아이디, 비밀번호 상태관리
   const [id, setId] = React.useState("");
   const [pw, setPw] = React.useState("");
   const [errorMessage, setErrorMessage] = React.useState("");
 
   const includesHangul = (text) => /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/i.test(text);
 
+  // input 값이 변할 때: 한글이 있는지 확인, id setting
   function handleInputChange(e) {
     const userValue = e.target.value;
     console.log(includesHangul(userValue));
@@ -39,6 +42,7 @@ function Login() {
     setPw(userValue);
   }
 
+  // login form을  서버로 POST
   function updateLogin(val1, val2) {
     setId(val1);
     jsonLocalStorage.setItem("id", val1);
@@ -52,13 +56,23 @@ function Login() {
     axios
       .post(url, data)
       .then((response) => {
+        // data 출력, token을 localStorage에 저장
         console.log(response.data);
+        const token = response.data.token;
+        const username = response.data.name;
+        jsonLocalStorage.setItem("token", token);
+        // 사용자 이름 localStorage에 저장
+        jsonLocalStorage.setItem("username", username);
+
+        console.log(jsonLocalStorage.getItem("token"));
+        console.log(jsonLocalStorage.getItem("username"));
       })
       .catch((error) => {
         console.error(error);
       });
   }
 
+  // login form 제출될 떄
   function handleFormSubmit(e) {
     e.preventDefault();
     setErrorMessage("");

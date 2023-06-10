@@ -10,10 +10,6 @@ function HeaderNav() {
     <div className="header">
       <div className="common-inner header-content">
         <div className="header_left">
-          {/* <a href="./index.html" className="title">
-            <img src={mainIcon} alt="홈 아이콘" />
-            <span>Cal로리</span>
-          </a> */}
           <Link to="/" className="title">
             <img src={mainIcon} alt="홈 아이콘" />
             <span>Cal로리</span>
