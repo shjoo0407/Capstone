@@ -23,7 +23,7 @@ class Account(AbstractUser): # + id,password,#last_login,is_superuser,username,#
         db_table = 'account'
 
     def __str__(self):
-        return self.name
+        return self.name or ''
 
 
 # 토큰 블랙리스트
