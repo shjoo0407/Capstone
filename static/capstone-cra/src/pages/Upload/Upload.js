@@ -134,7 +134,7 @@ function Upload() {
       const formData = new FormData();
       formData.append("photo", selectedFile);
 
-      const response = await fetch("../api/main/upload/imageupload/", {
+      const response = await fetch("../api/main/imageupload/", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
