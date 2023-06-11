@@ -4,6 +4,7 @@ import "../../styles/common.css";
 import "./MyPage.css";
 import HeaderNav from "../../components/Header/HeaderNav";
 import LoginHeaderNav from "../../components/Header/LoginHeaderNav";
+import { useNavigate } from "react-router-dom";
 
 import { Link } from "react-router-dom";
 
@@ -18,6 +19,7 @@ function UserInfoContent(props) {
 
 function MyPage() {
   const [userInfo, setUserInfo] = useState(null);
+  const navigate = useNavigate();
 
   const jsonLocalStorage = {
     setItem: (key, value) => {
@@ -141,8 +143,9 @@ function MyPage() {
       .then((response) => {
         if (response.ok) {
           console.log("DELETE 요청 성공");
-          localStorage.removeItem(username);
-          // 필요한 처리 로직을 추가합니다.
+          localStorage.removeItem("username");
+          localStorage.removeItem("token");
+          navigate("/");
         } else {
           console.error("DELETE 요청 실패");
         }
