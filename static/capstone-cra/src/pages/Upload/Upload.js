@@ -22,7 +22,6 @@ function Upload() {
     },
   };
 
-  const token = localStorage.getItem("token");
   const username = jsonLocalStorage.getItem("username"); // localStorage의 사용자 이름 가져오기
   const { formattedDate } = useParams(); // params의 현재 날짜 가져오기 format: 00000000
 
@@ -69,6 +68,11 @@ function Upload() {
   // 해당 날짜의 식단 리스트와 섭취한 영양성분 가져오기
   const fetchData = async () => {
     try {
+      const token = jsonLocalStorage.getItem("token");
+      if (!token) {
+        console.error("토큰이 없습니다!!!!");
+        return;
+      }
       const data = await fetch(`api/calendar/${formattedDate}`, {
         method: "GET",
         headers: {
@@ -122,6 +126,11 @@ function Upload() {
     //   })
     //   .catch((error) => console.error("Error:", error));
     try {
+      const token = jsonLocalStorage.getItem("token");
+      if (!token) {
+        console.error("토큰이 없습니다!!!!");
+        return;
+      }
       const formData = new FormData();
       formData.append("photo", selectedFile);
 
@@ -174,6 +183,11 @@ function Upload() {
     const realFoodName = modified ? modified : foodData.name;
 
     try {
+      const token = jsonLocalStorage.getItem("token");
+      if (!token) {
+        console.error("토큰이 없습니다!!!!");
+        return;
+      }
       const realFoodName = modified ? modified : foodData.name;
       const formData = new FormData();
       formData.append("photo", selectedFile);
@@ -212,6 +226,11 @@ function Upload() {
   const [deleteStatus, setDeleteStatus] = useState("");
 
   const handleDelete = (menuId) => {
+    const token = jsonLocalStorage.getItem("token");
+    if (!token) {
+      console.error("토큰이 없습니다!!!!");
+      return;
+    }
     fetch(`api/menu/${menuId}`, {
       method: "DELETE",
       headers: {
