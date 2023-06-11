@@ -208,7 +208,6 @@ const MyResponsiveLine = ({ data }) => (
 );
 
 function Chart({ data }) {
-  console.log(JSON.stringify(data));
   const statsData = [
     {
       id: "칼로리",
@@ -231,6 +230,8 @@ function Chart({ data }) {
       data: data.fat,
     },
   ];
+
+  console.log(statsData);
 
   // const statsData = [
   //   {
