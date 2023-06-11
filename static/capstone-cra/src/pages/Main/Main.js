@@ -31,9 +31,11 @@ function Main() {
           <div className="slogan slogan-sub">
             사진 찍어 칼로리 파악부터 건강한 식습관까지
           </div>
-          <span className="button start-btn">
-            <Link to="/Login">시작하기 →</Link>
-          </span>
+          {!username && (
+            <span className="button start-btn">
+              <Link to="/Login">시작하기 →</Link>
+            </span>
+          )}
           <img src={MainImg} alt="음식 사진" className="main-img" />
         </div>
       </div>
