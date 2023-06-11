@@ -351,19 +351,19 @@ def ImageUpload(request):
         food_image = request.FILES.get('photo')
 
         # 새로운 Gallery 객체 생성
-        gallery = Gallery(user_id=userid, name='',total='', kcal='', pro='', carbon='', fat='', food_image=food_image)
+        gallery = Gallery(user_id=userid, name='', total='', kcal='', pro='', carbon='', fat='', food_image=food_image)
         # DB에 저장
         gallery.save()
 
         uploaded_file_url = handle_uploaded_file(food_image)
         print(f"uploaded_file_url : {uploaded_file_url}")
         file_path = os.path.join(settings.MEDIA_ROOT, uploaded_file_url.lstrip('/media/'))
-        predicted_name = prediction(file_path)
+        predicted_name = prediction(file_path) # 모델이 예측한 음식 이름
 
         try:
             food = Food.objects.get(name=predicted_name)
         except Food.DoesNotExist:
-            return JsonResponse({'error' : f"{predicted_name} 을 찾을 수 없습니다."}, status=404)
+            return JsonResponse({'error': f"{predicted_name} 을 찾을 수 없습니다."}, status=404)
 
         gallery.name = predicted_name
         gallery.total = food.total
@@ -375,8 +375,8 @@ def ImageUpload(request):
 
         return JsonResponse({"message": "업로드 완료",
                              'image_id': gallery.image_id,
-                             'user_id' : userid,
-                             'upload date' : gallery.upload_date,
+                             'user_id': userid,
+                             'upload date': gallery.upload_date,
                              'name': gallery.name,
                              'total': gallery.total,
                              'kcal': gallery.kcal,
@@ -411,33 +411,27 @@ def prediction(image_path):
         image_data = f.read() # 이미지
 
     # torchserve API 호출
-    url = 'http://localhost:8080/predictions/model1'  # torchserve의 예측 엔드포인트 URL
+    url = 'http://[퍼블릭IP주소]/predictions/model1'  # torchserve의 예측 엔드포인트 URL
     headers = {'Content-Type': 'application/octet-stream'}
     response = requests.post(url, headers=headers, data=image_data)
 
     # 결과 확인
     if response.status_code == 200:
         result = response.json()
-        # ex) result = {
-        #   "53": 0.9821317195892334,
-        #   "125": 0.016887102276086807,
-        #   "58": 0.0008895615465007722,
-        #   "81": 5.9507572586881e-05,
-        #   "123": 1.2144737411290407e-05
-        # }
         sorted_data = sorted(result.items(), key=lambda x: x[1], reverse=True) # value 값으로 정렬
         sorted_keys = [item[0] for item in sorted_data]
-
-        label_data = read_json_file('../model/model_label.json')
+        label_path = os.path.join(settings.STATIC_ROOT, 'model_label.json')
+        label_data = read_json_file(label_path)
         top5 = {}
+
         for key in sorted_keys:
             label = label_data[key], prob = result[key]
             top5[label] = prob
 
         top5_json = json.dumps(top5) # json 파일로 변환
         print("성공")
-        print(f"분류 결과 : {top5_json}") # {'김치찌개' : 0.98 }
-        return list(top5.keys())[0]
+        print(f"분류 결과 : {top5_json}")
+        return list(top5.keys())[0] # top 1의 음식 이름
     else:
         print("실패")
         return None
