@@ -4,6 +4,7 @@ import "../../styles/common.css";
 import "./MyPage.css";
 import HeaderNav from "../../components/Header/HeaderNav";
 import LoginHeaderNav from "../../components/Header/LoginHeaderNav";
+import { useNavigate } from "react-router-dom";
 
 import { Link } from "react-router-dom";
 
