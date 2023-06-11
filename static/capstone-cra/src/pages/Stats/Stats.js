@@ -71,7 +71,7 @@ function Stats() {
           throw new Error("토큰이 없습니다.");
         }
 
-        const apiUrl = "api/main/stats/";
+        const apiUrl = "/api/main/stats/";
         const response = await fetch(apiUrl, {
           headers: {
             Authorization: `Bearer ${token}`,

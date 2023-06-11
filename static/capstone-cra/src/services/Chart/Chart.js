@@ -212,22 +212,22 @@ function Chart({ data }) {
     {
       id: "칼로리",
       color: "hsl(180, 70%, 50%)",
-      data: data.kcal,
+      data: data.data.kcal,
     },
     {
       id: "탄수화물",
       color: "hsl(302, 70%, 50%)",
-      data: data.carbon,
+      data: data.data.carbon,
     },
     {
       id: "단백질",
       color: "hsl(95, 70%, 50%)",
-      data: data.pro,
+      data: data.data.pro,
     },
     {
       id: "지방",
       color: "hsl(161, 70%, 50%)",
-      data: data.fat,
+      data: data.data.fat,
     },
   ];
 
