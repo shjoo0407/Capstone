@@ -175,7 +175,7 @@ function Daily() {
               {calendarData.map((item, index) => (
                 <div
                   key={index}
-                  className={`calendar-day ${
+                  className={`daily-day ${
                     item.isCurrentMonth ? "current-month" : "other-month"
                   }`}
                   onClick={() =>
