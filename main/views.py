@@ -23,7 +23,7 @@ def Upload(request):
             # Gallery 에서 날짜별 총 칼로리 섭취량 반환(ex date : 230531, total_calories : 2000)
             aggregated_data = (
                 Gallery.objects.filter(user=userid)
-                .annotate(date=TruncDate('uploaded_at'))
+                .annotate(date=TruncDate('upload_date'))
                 .values('date')
                 .annotate(total_calories=Sum('kcal'))
                 .values('date', 'total_calories')

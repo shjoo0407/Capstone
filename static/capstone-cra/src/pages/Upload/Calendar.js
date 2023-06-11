@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 const Calendar = () => {
   const navigate = useNavigate();
 
-  const API_URL = "api/main/upload/";
+  const API_URL = "/api/main/upload/";
   // date(000000), total_calories
 
   const jsonLocalStorage = {

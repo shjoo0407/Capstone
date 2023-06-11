@@ -152,13 +152,13 @@ def Mypage(request):
             #     user = account.objects.get(id=userid)
             # except account.DoesNotExist:
             #     return JsonResponse({'message': '해당 계정이 존재하지 않습니다.'}, status=404)
-
+            gender = '남성' if user.gender == 'M' else '여성'
             data = {
                 'message': '마이페이지 조회 성공',
                 'id': user.username,
                 'name': user.name,
                 'birthdate': user.birth,
-                'gender': user.gender,
+                'gender': gender,
                 'height': user.height,
                 'weight': user.weight
             }
