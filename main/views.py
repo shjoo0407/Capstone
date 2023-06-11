@@ -34,7 +34,7 @@ def Upload(request):
                 .annotate(total_calories=Sum('kcal'))
                 .values('date', 'total_calories')
             )
-
+            print(f"aggregated_data: {aggregated_data}")
             data = [
                 {
                     'date': item['date'].strftime('%Y%m%d'),
@@ -215,15 +215,16 @@ def UploadDate(request, date=None):
 
 
 # todo 식단 통계 페이지 조회
-@csrf_exempt
 def Statistics(request):
     if validate_token(request):
         if request.method == 'GET':
             userid = get_id_from_token(request)
             data = get_stat(userid)
             print(f"성공, data: {data}")
-
-            return JsonResponse(data, status=200)
+            print(f"type : {type(data)}")
+            #data = json.dumps(data)
+            print(f"type : {type(data)}")
+            return JsonResponse(data, safe=False, status=200)
 
         print("실패1: 잘못된 요청")
         return JsonResponse({'message': '잘못된 요청'}, status=500)
@@ -261,7 +262,6 @@ def get_stat(userid):
             'x': date.strftime('%Y/%m/%d'),
             'y': daily_stats['total_kcal'] or 0
         })
-
         stat['carbon'].append({
             'x': date.strftime('%Y/%m/%d'),
             'y': daily_stats['total_carbon'] or 0
