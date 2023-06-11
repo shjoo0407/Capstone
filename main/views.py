@@ -10,7 +10,7 @@ from collections import defaultdict
 from django.db.models import Sum
 from django.db.models.functions import TruncDate
 from accounts.models import Account
-
+from .models import Food
 from django.views.decorators.csrf import csrf_exempt
 from accounts.views import get_user_model
 from datetime import date, datetime, timedelta
@@ -327,18 +327,33 @@ def ImageUpload(request):
         food_image = request.FILES.get('photo')
 
         # 새로운 Gallery 객체 생성
-        gallery = Gallery(user_id=userid, food_image=food_image)
+        gallery = Gallery(user_id=userid, name='',total='', kcal='', pro='', carbon='', fat='', food_image=food_image,)
         # DB에 저장
         gallery.save()
 
-        response = prediction(gallery.food_image.path)
-        result = response.json()
+        predicted_name = prediction(food_image.path)
+        try:
+            food = Food.objects.get(name=predicted_name)
+        except Food.DoesNotExist:
+            return JsonResponse({'error' : f"{predicted_name} 을 찾을 수 없습니다."}, status=404)
+        gallery.name = predicted_name
+        gallery.total = food.total
+        gallery.kcal = food.kcal
+        gallery.carbon = food.carbon
+        gallery.pro = food.pro
+        gallery.fat = food.fat
+        gallery.save()
 
         return JsonResponse({"message": "업로드 완료",
                              'image_id': gallery.image_id,
-                             'user_id': userid,
-                             'upload date': gallery.upload_date,
-                             'result': result,
+                             'user_id' : userid,
+                             'upload date' : gallery.upload_date,
+                             'name': gallery.name,
+                             'total': gallery.total,
+                             'kcal': gallery.kcal,
+                             'carbon': gallery.carbon,
+                             'pro': gallery.pro,
+                             'fat': gallery.fat
                              }, status=200)
     else:
         # POST 요청이 아닌 경우
@@ -384,7 +399,7 @@ def prediction(image_path):
         top5_json = json.dumps(top5) # json 파일로 변환
         print("성공")
         print(f"분류 결과 : {top5_json}")
-        return result
+        return list(top5.keys())[0]
     else:
         print("실패")
         return None
