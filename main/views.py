@@ -10,7 +10,7 @@ from collections import defaultdict
 from django.db.models import Sum
 from django.db.models.functions import TruncDate
 from accounts.models import Account
-from datetime import date
+from datetime import date, datetime, timedelta
 
 # Create your views here.
 # todo 식단 업로드 페이지 조회
@@ -212,36 +212,65 @@ def Statistics(request):
         if request.method == 'GET':
 
             userid = get_id_from_token(request)
+            data = get_stat(userid)
 
-            galleries = Gallery.objects.filter(user=userid)
+            return JsonResponse(data,status=200)
 
-            aggregated_data = {
-                'pro': defaultdict(int),
-                'carbon': defaultdict(int),
-                'fat': defaultdict(int)
-            }
-
-            for gallery in galleries:
-                date = gallery.uploaded_at.strftime("%Y%m%d")
-                aggregated_data['pro'][date] += gallery.pro
-                aggregated_data['carbon'][date] += gallery.carbon
-                aggregated_data['fat'][date] += gallery.fat
-
-            data = {
-                'pro': [],
-                'carbon': [],
-                'fat': [],
-            }
-
-            for nutrient in ['pro', 'carbon', 'fat']:
-                for date, amount in aggregated_data[nutrient].items():
-                    data[nutrient].append({'x': date, 'y': amount})
-
-            return JsonResponse(data, safe=False)
 
         return JsonResponse({'message': '잘못된 요청'}, status=500)
 
     return JsonResponse({'message': '유효하지 않은 토큰'}, status=500)
+
+def get_stat(userid):
+    today = datetime.now().date()
+    week_ago = today - timedelta(days=6)
+
+    stat = {
+        'kcal' : [],
+        'carbon' : [],
+        'pro' : [],
+        'fat' : []
+    }
+
+    for i in range(7):
+        date = week_ago + timedelta(days=i)
+        next_date = date + timedelta(days=1)
+
+        daily_stats = Gallery.objects.filter(
+            user=userid
+        ).filter(
+            upload_date__range=(date, next_date)
+        ).aggregate(
+            total_kcal=Sum('kcal'),
+            total_carbon=Sum('carbon'),
+            total_pro=Sum('pro'),
+            total_fat=Sum('fat')
+        )
+
+        stat['kcal'].append({
+            'x': date.strftime('%Y/%m/%d'),
+            'y': daily_stats['total_kcal'] or 0
+        })
+
+        stat['carbon'].append({
+            'x': date.strftime('%Y/%m/%d'),
+            'y': daily_stats['total_carbon'] or 0
+        })
+
+        stat['pro'].append({
+            'x': date.strftime('%Y/%m/%d'),
+            'y': daily_stats['total_pro'] or 0
+        })
+
+        stat['fat'].append({
+            'x': date.strftime('%Y/%m/%d'),
+            'y': daily_stats['total_fat'] or 0
+        })
+
+    return stat
+
+
+
 
 
 # todo 이미지 파일 업로드 &
