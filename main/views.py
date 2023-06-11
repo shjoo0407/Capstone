@@ -210,15 +210,15 @@ def UploadDate(request, date=None):
 def Statistics(request):
     if validate_token(request):
         if request.method == 'GET':
-
             userid = get_id_from_token(request)
             data = get_stat(userid)
+            print(f"성공, data: {data}")
 
-            return JsonResponse(data,status=200)
+            return JsonResponse(data, status=200)
 
-
+        print("실패1: 잘못된 요청")
         return JsonResponse({'message': '잘못된 요청'}, status=500)
-
+    print("실패2: 유효하지 않은 토큰")
     return JsonResponse({'message': '유효하지 않은 토큰'}, status=500)
 
 def get_stat(userid):

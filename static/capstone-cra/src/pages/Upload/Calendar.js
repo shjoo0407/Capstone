@@ -43,8 +43,12 @@ const Calendar = () => {
           },
         });
 
+        console.log(response);
+
         if (response.ok) {
           const responseJson = await response.json();
+          console.log(responseJson);
+          console.log("D")
           setData(responseJson);
           console.log(data);
         } else {
