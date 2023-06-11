@@ -33,15 +33,21 @@ function Upload() {
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewURL, setPreviewURL] = useState("");
-  const [foodName, setFoodName] = useState("");
-  const [calories, setCalories] = useState("");
 
   const [nextForm, setNextForm] = useState(false); // form 전환 상태 관리
 
   const [uploadStatus, setUploadStatus] = useState(""); // 업로드 상태 관리
 
-  const [nutritions, setNutritions] = useState(null); // bar 그래프로 표현되는, 해당 날짜의 영양성분 data
+  // upload 페이지 로드 시 받는 권장섭취량 & 실제 섭취량 정보
+  const [cal, setCal] = useState([]);
+  const [carbon, setCarbon] = useState([]);
+  const [protein, setProtein] = useState([]);
+  const [fat, setFat] = useState([]);
+
   const [menuList, setMenuList] = useState([]); // 해당 날짜의 식단 리스트
+
+  // 1차 업로드 후 받은 음식 data
+  const [foodData, setFoodData] = useState(null);
 
   // test용 menu item
   const menuItems = [
@@ -60,18 +66,26 @@ function Upload() {
   // 해당 날짜의 식단 리스트와 섭취한 영양성분 가져오기
   const fetchData = async () => {
     try {
-      const calMenu = await fetch("...", {
+      const data = await fetch(`api/calendar/${formattedDate}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       // API_URL에 params의 data 추가해서 넣으면 될듯
-      const calMenuData = await calMenu.json();
-      console.log(calMenuData);
+      const dataJson = await data.json();
+      console.log(dataJson);
+      setMenuList(dataJson.menulist);
+      setCal([dataJson.calorie.recommended, dataJson.calorie.actual]);
+      setCarbon([
+        dataJson.carbonhydrate.recommended,
+        dataJson.carbonhydrate.actual,
+      ]);
+      setProtein([dataJson.protein.recommended, dataJson.protein.actual]);
+      setFat([dataJson.fat.recommended, dataJson.fat.actual]);
 
-      setNutritions(calMenuData.nutritions);
-      setMenuList(calMenuData.menuList);
+      console.log(menuList, cal, carbon, protein, fat);
+      console.log("연결...... 완료......");
     } catch (error) {
       console.error("데이터를 가져오는 동안 오류가 발생했습니다:", error);
     }
@@ -119,8 +133,7 @@ function Upload() {
       if (response.ok) {
         const data = await response.json();
         console.log(data);
-        // setFoodName(data.foodName); // 사진의 이름
-        // setCalories(data.calories); // 사진의 칼로리
+        setFoodData(data);
         setNextForm(true); // 다음 form으로 전환 (최종 업로드 form으로 전환)
         setUploadStatus("업로드 완료");
       } else {
@@ -134,7 +147,7 @@ function Upload() {
 
   // 최종 업로드
   const handleResultUpload = async () => {
-    if (!selectedFile || !foodName || !calories) {
+    if (!selectedFile || !foodData) {
       return;
     }
 
@@ -157,8 +170,7 @@ function Upload() {
     try {
       const formData = new FormData();
       formData.append("photo", selectedFile);
-      formData.append("foodName", foodName);
-      formData.append("calories", calories);
+      formData.append("foodData", foodData);
 
       const response = await fetch("api/result", {
         method: "POST",
@@ -180,7 +192,6 @@ function Upload() {
       );
       const calMenuData = await response.json();
 
-      setNutritions(calMenuData.nutritions);
       setMenuList(calMenuData.menuList);
     } catch (error) {
       console.error("Error:", error);
@@ -244,12 +255,21 @@ function Upload() {
                     <div className="upload-info">
                       <div className="food-info">
                         <div className="food-name">
-                          {foodName || "닭가슴살 샐러드 "}
+                          {(foodData && foodData.name) || "닭가슴살 샐러드 "}
                         </div>
-                        <div className="food-cal">{calories || "820kcal"}</div>
+                        <div className="food-cal">
+                          {(foodData && foodData.kcal) || "820kcal"}
+                        </div>
                       </div>
-                      <div className="cal-info">탄수화물 {"190g"}</div>
-                      <div className="cal-info">단백질 {"20g"}</div>
+                      <div className="cal-info">
+                        탄수화물 {(foodData && foodData.carbon) || "190g"}
+                      </div>
+                      <div className="cal-info">
+                        단백질 {(foodData && foodData.pro) || "20g"}
+                      </div>
+                      <div className="cal-info">
+                        지방 {(foodData && foodData.fat) || "20g"}
+                      </div>
                     </div>
                   )}
                 </div>

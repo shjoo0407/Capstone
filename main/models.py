@@ -6,7 +6,7 @@ from accounts.models import Account
 class Gallery(models.Model):
     user = models.ForeignKey(Account, on_delete=models.CASCADE) # 유저의 id(Account의 primary key('id' 필드)와 연결)
     image_id = models.AutoField(primary_key=True) # 음식 이미지 번호
-    name = models.CharField(max_length=30, blank=True, null=True) # 음식 이름
+    name = models.CharField(max_length=30, blank=True, null=False) # 음식 이름
     total = models.CharField(max_length=4, blank=True, null=True) # 음식 총량
     kcal = models.CharField(max_length=4, blank=True, null=True) # 칼로리
     carbon = models.CharField(max_length=4, blank=True, null=True) # 탄수화물
@@ -19,10 +19,8 @@ class Gallery(models.Model):
         managed = True
 
     def __str__(self):
-        if self.name:
-            return str(self.name)
-        else:
-            return str('')
+        return self.name or ''
+
 # 식품영양정보 DB의 음식
 class Food(models.Model):
     name = models.CharField(max_length=30) # 음식 이름

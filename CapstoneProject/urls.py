@@ -35,7 +35,7 @@ urlpatterns = [
     path('test/', TemplateView.as_view(template_name='testview.html')),
 
     # 관리자 페이지
-    path('admin/', admin.site.urls),
+    path('admin', admin.site.urls),
 
     # API 요청(/api 로 시작)
     path('api/', include('api.urls')),
