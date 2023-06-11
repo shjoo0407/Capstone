@@ -14,6 +14,7 @@ from .models import Food
 from django.views.decorators.csrf import csrf_exempt
 from accounts.views import get_user_model
 from datetime import date, datetime, timedelta
+from django.core.files.storage import FileSystemStorage
 
 
 # Create your views here.
@@ -36,7 +37,7 @@ def Upload(request):
 
             data = [
                 {
-                    'date': item['date'].strftime('%Y%m%d'),
+                    'date': item['date'].strftime('%Y%m%d')if item['date'] is not None else None,
                     'total_calories': item['total_calories']
                 }
                 for item in aggregated_data
@@ -326,15 +327,18 @@ def ImageUpload(request):
         food_image = request.FILES.get('photo')
 
         # 새로운 Gallery 객체 생성
-        gallery = Gallery(user_id=userid, name='',total='', kcal='', pro='', carbon='', fat='', food_image=food_image,)
+        gallery = Gallery(user_id=userid, name='',total='', kcal='', pro='', carbon='', fat='', food_image=food_image)
         # DB에 저장
         gallery.save()
 
-        predicted_name = prediction(food_image.path)
+        uploaded_file_url = handle_uploaded_file(food_image)
+        predicted_name = prediction(uploaded_file_url)
+
         try:
             food = Food.objects.get(name=predicted_name)
         except Food.DoesNotExist:
             return JsonResponse({'error' : f"{predicted_name} 을 찾을 수 없습니다."}, status=404)
+
         gallery.name = predicted_name
         gallery.total = food.total
         gallery.kcal = food.kcal
@@ -357,6 +361,12 @@ def ImageUpload(request):
     else:
         # POST 요청이 아닌 경우
         return JsonResponse({"error": "Invalid request"}, status=400)
+
+def handle_uploaded_file(uploaded_file):
+    fs = FileSystemStorage()
+    filename = fs.save(uploaded_file.name, uploaded_file)
+    uploaded_file_url = fs.url(filename)
+    return uploaded_file_url
 
 
 #todo(모델을 이용하여 이미지 분류)
