@@ -107,13 +107,15 @@ img {
   display: inline-block;
   width: 100%;
 }
-.login_btn {
-  margin-right: 10px;
+
+.user_btn {
+  margin-right: 0px;
 }
 
-.join_btn {
-  background-color: rgb(60, 179, 113);
-  color: rgb(255, 255, 255);
+.logout_btn {
+  /* background-color: #100f0d; */
+  color: #d0d0d0;
+  cursor: pointer;
 }
 
 .username {
