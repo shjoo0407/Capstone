@@ -10,13 +10,10 @@ from collections import defaultdict
 from django.db.models import Sum
 from django.db.models.functions import TruncDate
 from accounts.models import Account
-from datetime import date
-from django.views.decorators.csrf import csrf_exempt
-from accounts.views import get_user_model
+from datetime import date, datetime, timedelta
 
 # Create your views here.
 # todo 식단 업로드 페이지 조회
-@csrf_exempt
 def Upload(request):
     if validate_token(request):
         # '식단 업로드' 페이지 접속
@@ -34,7 +31,7 @@ def Upload(request):
 
             data = [
                 {
-                    'date': item['date'].strftime('%Y%m%d')if item['date'] is not None else None,
+                    'date': item['date'].strftime('%Y%m%d'),
                     'total_calories': item['total_calories']
                 }
                 for item in aggregated_data
@@ -79,7 +76,6 @@ def Upload(request):
 
 
 # todo 데일리 식단 페이지 조회
-@csrf_exempt
 def Daily(request):
     if validate_token(request):
         if request.method == 'GET':
@@ -115,9 +111,8 @@ def Daily(request):
 
             return JsonResponse(data, safe=False)
         return JsonResponse({'message': '잘못된 요청'}, status=500)
-    return JsonResponse({'message': '유효하지 않은 토큰!'}, status=500)
+    return JsonResponse({'message': '유효하지 않은 토큰'}, status=500)
 
-@csrf_exempt
 def UploadDate(request, date=None):
     if validate_token(request):
         if request.method == 'GET':
@@ -212,42 +207,70 @@ def UploadDate(request, date=None):
 
 
 # todo 식단 통계 페이지 조회
-@csrf_exempt
 def Statistics(request):
     if validate_token(request):
         if request.method == 'GET':
-
             userid = get_id_from_token(request)
+            data = get_stat(userid)
+            print(f"성공, data: {data}")
 
-            galleries = Gallery.objects.filter(user=userid)
+            return JsonResponse(data, status=200)
 
-            aggregated_data = {
-                'pro': defaultdict(int),
-                'carbon': defaultdict(int),
-                'fat': defaultdict(int)
-            }
-
-            for gallery in galleries:
-                date = gallery.upload_date.strftime("%Y%m%d")
-                aggregated_data['pro'][date] += gallery.pro
-                aggregated_data['carbon'][date] += gallery.carbon
-                aggregated_data['fat'][date] += gallery.fat
-
-            data = {
-                'pro': [],
-                'carbon': [],
-                'fat': [],
-            }
-
-            for nutrient in ['pro', 'carbon', 'fat']:
-                for date, amount in aggregated_data[nutrient].items():
-                    data[nutrient].append({'x': date, 'y': amount})
-
-            return JsonResponse(data, safe=False)
-
+        print("실패1: 잘못된 요청")
         return JsonResponse({'message': '잘못된 요청'}, status=500)
-
+    print("실패2: 유효하지 않은 토큰")
     return JsonResponse({'message': '유효하지 않은 토큰'}, status=500)
+
+def get_stat(userid):
+    today = datetime.now().date()
+    week_ago = today - timedelta(days=6)
+
+    stat = {
+        'kcal' : [],
+        'carbon' : [],
+        'pro' : [],
+        'fat' : []
+    }
+
+    for i in range(7):
+        date = week_ago + timedelta(days=i)
+        next_date = date + timedelta(days=1)
+
+        daily_stats = Gallery.objects.filter(
+            user=userid
+        ).filter(
+            upload_date__range=(date, next_date)
+        ).aggregate(
+            total_kcal=Sum('kcal'),
+            total_carbon=Sum('carbon'),
+            total_pro=Sum('pro'),
+            total_fat=Sum('fat')
+        )
+
+        stat['kcal'].append({
+            'x': date.strftime('%Y/%m/%d'),
+            'y': daily_stats['total_kcal'] or 0
+        })
+
+        stat['carbon'].append({
+            'x': date.strftime('%Y/%m/%d'),
+            'y': daily_stats['total_carbon'] or 0
+        })
+
+        stat['pro'].append({
+            'x': date.strftime('%Y/%m/%d'),
+            'y': daily_stats['total_pro'] or 0
+        })
+
+        stat['fat'].append({
+            'x': date.strftime('%Y/%m/%d'),
+            'y': daily_stats['total_fat'] or 0
+        })
+
+    return stat
+
+
+
 
 
 # todo 이미지 파일 업로드 &
@@ -284,66 +307,42 @@ def Statistics(request):
 #                                  }, status=200)
 #
 #     return JsonResponse({'message': '잘못된 요청'}, status=500)
-@csrf_exempt
+
 def ImageUpload(request):
-    if not validate_token(request):
-        return JsonResponse({'error':'유효하지 않은 토큰'}, status=401)
-    if request.method == "POST":
-        userid = get_id_from_token(request)
-        food_image = request.FILES.get('photo')
+    if validate_token(request):
+        if request.method == "POST":
+            userid = get_id_from_token(request)
+            food_image = request.FILES.get('food_image')
+            if food_image:
+                # Create a new Gallery entry with the image
+                gallery = Gallery.objects.create(user=userid, food_image=food_image)
 
-        # 새로운 Gallery 객체 생성
-        gallery = Gallery(user_id=userid, food_image=food_image)
-        # DB에 저장
-        gallery.save()
+                # Process the image
+                response = prediction(gallery.food_image.path)
+                result = response.json()
 
-        response = prediction(gallery.food_image.path)
-        result = response.json()
+                # Update the Gallery entry with the image data
+                gallery.name = result['name']
+                gallery.total = result['total']
+                gallery.kcal = result['kcal']
+                gallery.pro = result['pro']
+                gallery.carbon = result['carbon']
+                gallery.fat = result['fat']
+                gallery.save()
 
+                return JsonResponse({
+                    'message': 'Image uploaded successfully',
+                    'id': gallery.image_id,
+                    'name': result['name'],
+                    'total': result['total'],
+                    'kcal': result['kcal'],
+                    'pro': result['pro'],
+                    'carbon': result['carbon'],
+                    'fat': result['fat'],
+                }, status=200)
 
-
-        # 저장이 완료되었음을 클라이언트에게 알림
-        return JsonResponse({"message": "업로드 완료",
-                             'image_id': gallery.image_id,
-                             'user_id' : userid,
-                             'upload date' : gallery.upload_date,
-                             'result': result,
-                             }, status=200)
-    else:
-        # POST 요청이 아닌 경우
-        return JsonResponse({"error": "Invalid request"}, status=400)
-
-
-            # if food_image:
-            #     # Create a new Gallery entry with the image
-            #     gallery = Gallery.objects.create(user=userid, food_image=food_image)
-            #
-            #     # Process the image
-            #     # response = prediction(gallery.food_image.path)
-            #     # result = response.json()
-            #
-            #     # Update the Gallery entry with the image data
-            #     # gallery.name = result['name']
-            #     # gallery.total = result['total']
-            #     # gallery.kcal = result['kcal']
-            #     # gallery.pro = result['pro']
-            #     # gallery.carbon = result['carbon']
-            #     # gallery.fat = result['fat']
-            #     # gallery.save()
-            #     #
-            #     # return JsonResponse({
-            #     #     'message': 'Image uploaded successfully',
-            #     #     'id': gallery.image_id,
-            #     #     'name': result['name'],
-            #     #     'total': result['total'],
-            #     #     'kcal': result['kcal'],
-            #     #     'pro': result['pro'],
-            #     #     'carbon': result['carbon'],
-            #     #     'fat': result['fat'],
-            #     # }, status=200)
-            #
-            # else:
-            #     return JsonResponse({'message': '이미지 파일이 필요합니다.'}, status=400)
+            else:
+                return JsonResponse({'message': '이미지 파일이 필요합니다.'}, status=400)
 
 #todo(모델을 이용하여 이미지 분류)
 # 0. .mar 경로 : model/model_store/<.mar file>
@@ -351,7 +350,7 @@ def ImageUpload(request):
 # 2. torchserve 서버에 모델 등록(torchserve --model-store model/model_store --models <모델이름>=model/model_store/<.mar파일> --host <localhost or 퍼블릭 IPv4 주소> --port <8080 or 80 or 443>)
 # 3. torchserve 서버 시작/중지(torchserve --start // torchserve --stop)
 # 4. torchserve API 호출 후 등록된 모델에 이미지 넣어서 결과 확인
-@csrf_exempt
+
 def prediction(image_path):
     # 이미지 파일 열기
     with open(image_path, 'rb') as f:
@@ -388,12 +387,12 @@ def prediction(image_path):
     else:
         print("실패")
         return None
-@csrf_exempt
+
 def read_json_file(file_path):
     with open(file_path, 'r') as json_file:
         data = json.load(json_file)
         return data
-@csrf_exempt
+
 def calculator(userid): # 권장 섭취량(칼로리, 탄수화물, 단백질, 지방) 계산기
     user = Account.objects.get(id=userid)
     today = date.today()
@@ -437,8 +436,6 @@ def calculator(userid): # 권장 섭취량(칼로리, 탄수화물, 단백질, �
 # 테스트(안쓸듯)
 from .forms import ImageUploadForm
 from  django.conf import settings
-
-@csrf_exempt
 def test_view(request):
     if request.method == 'POST':
         form = ImageUploadForm(request.POST, request.FILES)

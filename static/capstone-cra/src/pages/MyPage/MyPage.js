@@ -77,6 +77,7 @@ function MyPage() {
         if (response.ok) {
           const responseData = await response.json();
           setUserInfo(responseData);
+          console.log(userInfo)
         } else {
           throw new Error("GET 요청에 실패했습니다.");
         }
