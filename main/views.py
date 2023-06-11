@@ -15,6 +15,8 @@ from django.views.decorators.csrf import csrf_exempt
 from accounts.views import get_user_model
 from datetime import date, datetime, timedelta
 from django.core.files.storage import FileSystemStorage
+import os
+from django.conf import settings
 
 
 # Create your views here.
@@ -332,7 +334,9 @@ def ImageUpload(request):
         gallery.save()
 
         uploaded_file_url = handle_uploaded_file(food_image)
-        predicted_name = prediction(uploaded_file_url)
+        print(f"uploaded_file_url : {uploaded_file_url}")
+        file_path = os.path.join(settings.MEDIA_ROOT, uploaded_file_url.lstrip('/media/'))
+        predicted_name = prediction(file_path)
 
         try:
             food = Food.objects.get(name=predicted_name)
@@ -366,6 +370,7 @@ def handle_uploaded_file(uploaded_file):
     fs = FileSystemStorage()
     filename = fs.save(uploaded_file.name, uploaded_file)
     uploaded_file_url = fs.url(filename)
+    print(f"fs : {fs}, filename : {filename}, uploaded_file_url : {uploaded_file_url}")
     return uploaded_file_url
 
 
@@ -407,7 +412,7 @@ def prediction(image_path):
 
         top5_json = json.dumps(top5) # json 파일로 변환
         print("성공")
-        print(f"분류 결과 : {top5_json}")
+        print(f"분류 결과 : {top5_json}") # {'김치찌개' : 0.98 }
         return list(top5.keys())[0]
     else:
         print("실패")
