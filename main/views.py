@@ -11,6 +11,7 @@ from django.db.models import Sum
 from django.db.models.functions import TruncDate
 from accounts.models import Account
 from datetime import date, datetime, timedelta
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 # todo 식단 업로드 페이지 조회

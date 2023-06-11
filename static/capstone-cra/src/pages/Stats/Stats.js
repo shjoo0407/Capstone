@@ -33,7 +33,7 @@ function Stats() {
           throw new Error("토큰이 없습니다.");
         }
 
-        const apiUrl = "api/main/stats/";
+        const apiUrl = "/api/main/stats/";
         const response = await fetch(apiUrl, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -43,7 +43,7 @@ function Stats() {
         if (response.ok) {
           const responseJson = await response.json();
           setData(responseJson);
-          console.log(data);
+          console.log(JSON.stringify(data));
         } else {
           throw new Error("GET 요청에 실패했습니다.");
         }
