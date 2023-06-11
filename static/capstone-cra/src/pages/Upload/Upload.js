@@ -73,7 +73,7 @@ function Upload() {
         console.error("토큰이 없습니다!!!!");
         return;
       }
-      const data = await fetch(`api/calendar/${formattedDate}`, {
+      const data = await fetch(`../api/main/calendar/${formattedDate}/`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,

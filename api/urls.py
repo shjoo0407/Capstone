@@ -16,7 +16,7 @@ urlpatterns = [
     # main
     # 식단 업로드 페이지
     path('main/upload/', view2.Upload, name='upload'), # 식단 업로드 페이지 조회(GET)
-    path('main/upload/<str:date>/', view2.UploadDate, name='upload_date'), # 식단 업로드 -> 날짜 선택(해당 날짜의 식단(메뉴들), 칼/탄/단/지), 업로드 후에는)
+    path('main/calendar/<str:formattedDate>/', view2.UploadDate, name='upload_date'), # 식단 업로드 -> 날짜 선택(해당 날짜의 식단(메뉴들), 칼/탄/단/지), 업로드 후에는)
     #path('main/daily/{date}/fileupload', # todo 식단 업로드 -> 날짜 선택 -> 파일 업로드 버튼 클릭
     path('main/imageupload/', view2.ImageUpload, name='imageupload'),
 

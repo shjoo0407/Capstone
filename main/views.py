@@ -1,3 +1,5 @@
+import os
+
 from django.shortcuts import render
 from accounts.views import validate_token
 from accounts.views import get_id_from_token
@@ -15,6 +17,8 @@ from django.views.decorators.csrf import csrf_exempt
 from accounts.views import get_user_model
 from datetime import date, datetime, timedelta
 from django.core.files.storage import FileSystemStorage
+from django.conf import settings
+
 
 
 # Create your views here.
@@ -121,16 +125,17 @@ def Daily(request):
     return JsonResponse({'message': '유효하지 않은 토큰'}, status=500)
 
 @csrf_exempt
-def UploadDate(request, date=None):
+def UploadDate(request, formattedDate):
     if validate_token(request):
         if request.method == 'GET':
             userid = get_id_from_token(request)
             # 권장 섭취량
             recommended = calculator(userid) # 권장 섭취량([칼로리, 탄수화물, 단백질, 지방])
             # 날짜별 각 음식의 영양소 정보
+            date = datetime.strptime(formattedDate, '%Y%m%d').date()
             food_data = (
-                Gallery.objects.filter(user=userid, uploaded_date=date)
-                .values('name', 'kcal', 'protein', 'carbon', 'fat')
+                Gallery.objects.filter(user=userid, upload_date=date)
+                .values('name', 'kcal', 'pro', 'carbon', 'fat')
             )
 
             # 날짜별 각 영양소의 총합
@@ -138,11 +143,11 @@ def UploadDate(request, date=None):
                 Gallery.objects.filter(user=userid, upload_date=date)
                 .annotate(
                     total_kcal=Sum('kcal'),
-                    total_pro=Sum('protein'),
+                    total_pro=Sum('pro'),
                     total_carbon=Sum('carbon'),
                     total_fat=Sum('fat')
                 )
-                .values('total_kcal', 'total_pro', 'total_carbon', 'total_fat')[0]
+                .values('total_kcal', 'total_pro', 'total_carbon', 'total_fat').first()
             )
             menulist = Gallery.objects.filter(user=userid).order_by('upload_date').values_list('name', flat=True)
             # data = {
@@ -153,64 +158,85 @@ def UploadDate(request, date=None):
             #     'total_fat': aggregated_data['total_fat'],
             #     'foods': list(food_data)
             # }
-            data = {
-                'menulist': menulist,
-                'calorie': {
-                    'recommended': recommended[0],
-                    'actual': int(aggregated_data['total_kcal']),
-                },
-                'carbonhydrate': {
-                    'recommended': recommended[1],
-                    'actual': int(aggregated_data['total_carbon']),
-                },
-                'protein': {
-                    'recommended': recommended[2],
-                    'actual': int(aggregated_data['total_protein']),
-                },
-                'fat': {
-                    'recommended': recommended[3],
-                    'actual': int(aggregated_data['total_fat']),
-                },
-            }
+            if aggregated_data is None:
+                data = {
+                    'menulist': [],
+                    'calorie': {
+                        'recommended': recommended[0],
+                        'actual': 0,
+                    },
+                    'carbonhydrate': {
+                        'recommended': recommended[1],
+                        'actual': 0,
+                    },
+                    'protein': {
+                        'recommended': recommended[2],
+                        'actual': 0,
+                    },
+                    'fat': {
+                        'recommended': recommended[3],
+                        'actual': 0,
+                    },
+                }
+            else:
+                data = {
+                    'menulist': menulist,
+                    'calorie': {
+                        'recommended': recommended[0],
+                        'actual': int(aggregated_data['total_kcal']),
+                    },
+                    'carbonhydrate': {
+                        'recommended': recommended[1],
+                        'actual': int(aggregated_data['total_carbon']),
+                    },
+                    'protein': {
+                        'recommended': recommended[2],
+                        'actual': int(aggregated_data['total_protein']),
+                    },
+                    'fat': {
+                        'recommended': recommended[3],
+                        'actual': int(aggregated_data['total_fat']),
+                    },
+                }
 
             return JsonResponse(data, safe=False, status=200)
 
         #사진 업로드 버튼 "다음 단계"
-        elif request.method == "POST":
-            userid = get_id_from_token(request)
-            food_image = request.FILES.get('food_image')
-            if food_image:
-                # Create a new Gallery entry with the image
-                gallery = Gallery.objects.create(user=userid, food_image=food_image)
-
-                # Process the image
-                response = prediction(gallery.food_image.path)
-                result = response.json()
-
-                # Update the Gallery entry with the image data
-                gallery.name = result['name']
-                gallery.total = result['total']
-                gallery.kcal = result['kcal']
-                gallery.pro = result['pro']
-                gallery.carbon = result['carbon']
-                gallery.fat = result['fat']
-                gallery.save()
-
-                return JsonResponse({
-                    'message': 'Image uploaded successfully',
-                    'id': gallery.image_id,
-                    'name': result['name'],
-                    'total': result['total'],
-                    'kcal': result['kcal'],
-                    'pro': result['pro'],
-                    'carbon': result['carbon'],
-                    'fat': result['fat'],
-                }, status=200)
-
-            else:
-                return JsonResponse({'message': '이미지 파일이 필요합니다.'}, status=400)
-
-    return JsonResponse({'message': '유효하지 않은 토큰'}, status=500)
+    #     elif request.method == "POST":
+    #         userid = get_id_from_token(request)
+    #         food_image = request.FILES.get('food_image')
+    #         if food_image:
+    #             # Create a new Gallery entry with the image
+    #             gallery = Gallery.objects.create(user=userid, food_image=food_image)
+    #
+    #             # Process the image
+    #             response = prediction(gallery.food_image.path)
+    #             result = response.json()
+    #
+    #             # Update the Gallery entry with the image data
+    #             gallery.name = result['name']
+    #             gallery.total = result['total']
+    #             gallery.kcal = result['kcal']
+    #             gallery.pro = result['pro']
+    #             gallery.carbon = result['carbon']
+    #             gallery.fat = result['fat']
+    #             gallery.save()
+    #
+    #             return JsonResponse({
+    #                 'message': 'Image uploaded successfully',
+    #                 'id': gallery.image_id,
+    #                 'name': result['name'],
+    #                 'total': result['total'],
+    #                 'kcal': result['kcal'],
+    #                 'pro': result['pro'],
+    #                 'carbon': result['carbon'],
+    #                 'fat': result['fat'],
+    #             }, status=200)
+    #
+    #         else:
+    #             return JsonResponse({'message': '이미지 파일이 필요합니다.'}, status=400)
+    #
+    # return JsonResponse({'message': '유효하지 않은 토큰'}, status=500)
 
 
 
@@ -332,7 +358,9 @@ def ImageUpload(request):
         gallery.save()
 
         uploaded_file_url = handle_uploaded_file(food_image)
-        predicted_name = prediction(uploaded_file_url)
+        print(f"uploaded_file_url : {uploaded_file_url}")
+        file_path = os.path.join(settings.MEDIA_ROOT, uploaded_file_url.lstrip('/media/'))
+        predicted_name = prediction(file_path)
 
         try:
             food = Food.objects.get(name=predicted_name)
@@ -362,11 +390,14 @@ def ImageUpload(request):
         # POST 요청이 아닌 경우
         return JsonResponse({"error": "Invalid request"}, status=400)
 
+@csrf_exempt
 def handle_uploaded_file(uploaded_file):
     fs = FileSystemStorage()
     filename = fs.save(uploaded_file.name, uploaded_file)
     uploaded_file_url = fs.url(filename)
+    print(f"fs : {fs}, filename : {filename}, uploaded_file_url : {uploaded_file_url}")
     return uploaded_file_url
+
 
 
 #todo(모델을 이용하여 이미지 분류)
@@ -377,9 +408,11 @@ def handle_uploaded_file(uploaded_file):
 # 4. torchserve API 호출 후 등록된 모델에 이미지 넣어서 결과 확인
 @csrf_exempt
 def prediction(image_path):
+    absolute_image_path = os.path.join(settings.MEDIA_ROOT, image_path)
     # 이미지 파일 열기
-    with open(image_path, 'rb') as f:
+    with open(absolute_image_path, 'rb') as f:
         image_data = f.read() # 이미지
+
 
     # torchserve API 호출
     url = 'http://localhost:8080/predictions/model1'  # torchserve의 예측 엔드포인트 URL
@@ -449,7 +482,7 @@ def calculator(userid): # 권장 섭취량(칼로리, 탄수화물, 단백질, �
     rec_pro = int(weight)
 
     # 지방(전체 섭취량의 25%)
-    rec_fat = int(rec_kcal / 0.25 / 9)
+    rec_fat = int(rec_kcal * 0.25 / 9)
     return [rec_kcal, rec_carbon, rec_pro, rec_fat]
 
 
