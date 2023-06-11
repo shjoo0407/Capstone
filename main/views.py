@@ -303,10 +303,6 @@ def get_stat(userid):
 
     return stat
 
-
-
-
-
 # todo 이미지 파일 업로드 &
 # def FileUpload(request):
 #     if validate_token(request):
@@ -395,8 +391,6 @@ def handle_uploaded_file(uploaded_file):
     uploaded_file_url = fs.url(filename)
     print(f"fs : {fs}, filename : {filename}, uploaded_file_url : {uploaded_file_url}")
     return uploaded_file_url
-
-
 
 #todo(모델을 이용하여 이미지 분류)
 # 0. .mar 경로 : model/model_store/<.mar file>
