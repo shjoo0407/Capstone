@@ -80,11 +80,6 @@ function Stats() {
 
         if (response.ok) {
           const responseJson = await response.json();
-          //const txt = await response.text();
-          console.log("responseJson", responseJson);
-          //console.log("Txt", txt);
-          console.log("responseJson.data", responseJson.data);
-
           setData(responseJson);
           console.log("data", data);
         } else {
@@ -98,8 +93,7 @@ function Stats() {
     fetchData();
   }, []);
 
-
-   useEffect(() => {
+  useEffect(() => {
     console.log("data", data);
   }, [data]);
 
@@ -117,9 +111,10 @@ function Stats() {
 
       let apiUrl = `/api/main/stats/${type}/`;
 
-      if (type === 'weekly') {
+      if (type === "weekly") {
         apiUrl = "/api/main/stats/";
       }
+
       const response = await fetch(apiUrl, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -201,7 +196,7 @@ function Stats() {
               1년
             </button>
           </div>
-          {data ? ( <Chart data={data} />) : (<p>로 딩 중.....</p>)}
+          {data ? <Chart data={data} /> : <p>로 딩 중.....</p>}
           {/* {testdata && <Chart data={testdata} />} */}
         </div>
       </div>
