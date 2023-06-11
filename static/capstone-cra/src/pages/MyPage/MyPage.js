@@ -77,7 +77,7 @@ function MyPage() {
         if (response.ok) {
           const responseData = await response.json();
           setUserInfo(responseData);
-          console.log(userInfo)
+          console.log(userInfo);
         } else {
           throw new Error("GET 요청에 실패했습니다.");
         }
@@ -141,6 +141,7 @@ function MyPage() {
       .then((response) => {
         if (response.ok) {
           console.log("DELETE 요청 성공");
+          localStorage.removeItem(username);
           // 필요한 처리 로직을 추가합니다.
         } else {
           console.error("DELETE 요청 실패");
