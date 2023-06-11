@@ -14,6 +14,7 @@ from .models import Food
 from django.views.decorators.csrf import csrf_exempt
 from accounts.views import get_user_model
 from datetime import date, datetime, timedelta
+from django.views.decorators.csrf import csrf_exempt
 
 
 # Create your views here.
