@@ -11,7 +11,6 @@ import { useNavigate } from "react-router-dom";
 
 const Calendar = () => {
   const navigate = useNavigate();
-
   const API_URL = "/api/main/upload/";
   // date(000000), total_calories
 
@@ -43,11 +42,8 @@ const Calendar = () => {
           },
         });
 
-        console.log(response);
-
         if (response.ok) {
           const responseJson = await response.json();
-          console.log(responseJson);
           setData(responseJson);
           console.log(data);
         } else {
@@ -104,7 +100,7 @@ const Calendar = () => {
     const calendarData = [];
     console.log(calendarData);
 
-    // 서버 get 요청 용 formatted date (00000000)
+    // 서버 get 요청 용 formatted date (000000)
     const getFormattedDate = (year, month, day) => {
       const formattedDate = `${year.toString().substr(2, 2)}${month
         .toString()
@@ -145,6 +141,10 @@ const Calendar = () => {
     month: "long",
     year: "numeric",
   });
+
+  if (!data) {
+    return null;
+  }
 
   return (
     <div>
