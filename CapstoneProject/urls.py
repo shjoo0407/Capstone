@@ -42,16 +42,16 @@ urlpatterns = [
 
     # 웹페이지
     path('', TemplateView.as_view(template_name='index.html')), # 메인 화면
-    path('Login/', TemplateView.as_view(template_name='index.html')), # 로그인 화면
-    path('join/', TemplateView.as_view(template_name='index.html')), # 회원가입 화면
-    path('Success/', TemplateView.as_view(template_name='index.html')),
-
+    path('login', TemplateView.as_view(template_name='index.html')), # 로그인 화면
+    path('join', TemplateView.as_view(template_name='index.html')), # 회원가입 화면
+    path('success', TemplateView.as_view(template_name='index.html')),
+    path('Mypage', TemplateView.as_view(template_name='index.html')),
     # 식단 업로드
-    path('calendar/', TemplateView.as_view(template_name='index.html')),
-    path('caldendar/<str:formattedData>/', TemplateView.as_view(template_name='index.html')), # 특정 날짜 선택
+    path('calendar', TemplateView.as_view(template_name='index.html')),
+    path('calendar/<str:date>', TemplateView.as_view(template_name='index.html')), # 특정 날짜 선택
 
-    path('daily/', TemplateView.as_view(template_name='index.html')), # Daily 식단
-    path('stats/', TemplateView.as_view(template_name='index.html')), # 식단 통계
+    path('daily', TemplateView.as_view(template_name='index.html')), # Daily 식단
+    path('stats', TemplateView.as_view(template_name='index.html')), # 식단 통계
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 #path('login/', serve, {'document_root': settings.STATIC_ROOT, 'path': 'capstone-cra/build/index.html'}),

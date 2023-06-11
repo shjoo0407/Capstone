@@ -7,7 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 // api url
-const url = "api/accounts/login/";
+const url = "/api/accounts/login/";
 
 const jsonLocalStorage = {
   setItem: (key, value) => {

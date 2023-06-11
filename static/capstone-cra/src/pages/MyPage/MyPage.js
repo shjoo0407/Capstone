@@ -39,7 +39,7 @@ function MyPage() {
         throw new Error("토큰이 없습니다.");
       }
 
-      const apiUrl = "api/accounts/mypage/";
+      const apiUrl = "/api/accounts/mypage/";
       const response = await fetch(apiUrl, {
         headers: {
           Authorization: `Bearer ${token}`,

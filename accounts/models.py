@@ -25,6 +25,7 @@ class Account(AbstractUser): # + id,password,#last_login,is_superuser,username,#
     def __str__(self):
         return self.name
 
+
 # 토큰 블랙리스트
 class BlacklistedToken(models.Model):
     token = models.CharField(max_length=255)

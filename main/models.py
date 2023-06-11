@@ -12,15 +12,17 @@ class Gallery(models.Model):
     carbon = models.CharField(max_length=4, blank=True, null=True) # 탄수화물
     pro = models.CharField(max_length=4, blank=True, null=True) # 단백질
     fat = models.CharField(max_length=4, blank=True, null=True) # 지방
-    upload_date = models.DateField(auto_now_add=True) # 이미지 업로드 날짜
+    upload_date = models.DateTimeField(auto_now_add=True) # 이미지 업로드 날짜
     food_image = models.ImageField(upload_to="media/", blank=True, null=True) # 음식 이미지 파일
 
     class Meta:
         managed = True
 
-
-
-
+    def __str__(self):
+        if self.name:
+            return str(self.name)
+        else:
+            return str('')
 # 식품영양정보 DB의 음식
 class Food(models.Model):
     name = models.CharField(max_length=30) # 음식 이름
