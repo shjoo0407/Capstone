@@ -100,6 +100,7 @@ function Stats() {
                 backgroundColor:
                   selectedButton === "weekly" ? "rgb(60, 179, 113)" : "#d0d0d0",
                 fontWeight: selectedButton === "weekly" ? "700" : "normal",
+                color: selectedButton === "weekly" ? "white" : "black",
               }}
             >
               일주일
@@ -112,9 +113,10 @@ function Stats() {
                 backgroundColor:
                   selectedButton === "month" ? "rgb(60, 179, 113)" : "#d0d0d0",
                 fontWeight: selectedButton === "month" ? "700" : "normal",
+                color: selectedButton === "month" ? "white" : "black",
               }}
             >
-              1달
+              1개월
             </button>
             <button
               className="chart-btn"
@@ -124,9 +126,10 @@ function Stats() {
                 backgroundColor:
                   selectedButton === "month3" ? "rgb(60, 179, 113)" : "#d0d0d0",
                 fontWeight: selectedButton === "month3" ? "700" : "normal",
+                color: selectedButton === "month3" ? "white" : "black",
               }}
             >
-              3달
+              3개월
             </button>
             <button
               className="chart-btn"
@@ -136,6 +139,7 @@ function Stats() {
                 backgroundColor:
                   selectedButton === "year" ? "rgb(60, 179, 113)" : "#d0d0d0",
                 fontWeight: selectedButton === "year" ? "700" : "normal",
+                color: selectedButton === "year" ? "white" : "black",
               }}
             >
               1년

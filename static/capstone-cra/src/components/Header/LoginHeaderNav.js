@@ -28,7 +28,7 @@ function LoginHeaderNav({ username }) {
         </div>
         <div className="header_right">
           <span className="button login_btn">
-            <Link to="/Mypage" className="username">
+            <Link to="/mypage" className="username">
               {username} 님
             </Link>
           </span>
