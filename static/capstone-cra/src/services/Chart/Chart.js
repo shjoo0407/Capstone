@@ -2,7 +2,6 @@ import React from "react";
 // import { Link } from "react-router-dom";
 import { ResponsiveLine } from "@nivo/line";
 
-
 const MyResponsiveLine = ({ data }) => (
   <ResponsiveLine
     data={data}
@@ -10,7 +9,7 @@ const MyResponsiveLine = ({ data }) => (
     xScale={{ type: "point" }}
     yScale={{
       type: "linear",
-      min: "auto",
+      min: 0,
       max: "auto",
       stacked: false,
       reverse: false,
@@ -70,33 +69,32 @@ const MyResponsiveLine = ({ data }) => (
 );
 
 function Chart({ data }) {
-
   const statsData = [
-     {
-     id: "칼로리",
+    {
+      id: "칼로리",
       color: "hsl(180, 70%, 50%)",
-       data: data.kcal
-     },
+      data: data.kcal,
+    },
     {
       id: "탄수화물",
-     color: "hsl(302, 70%, 50%)",
-       data: data.carbon
-     },
-     {
+      color: "hsl(302, 70%, 50%)",
+      data: data.carbon,
+    },
+    {
       id: "단백질",
-       color: "hsl(95, 70%, 50%)",
-      data: data.pro
-     },
-     {
-       id: "지방",
-       color: "hsl(161, 70%, 50%)",
-       data: data.fat
-     },
-   ];
+      color: "hsl(95, 70%, 50%)",
+      data: data.pro,
+    },
+    {
+      id: "지방",
+      color: "hsl(161, 70%, 50%)",
+      data: data.fat,
+    },
+  ];
 
   return (
     <div style={{ height: 500, width: 1200 }}>
-       <MyResponsiveLine data={statsData} />
+      <MyResponsiveLine data={statsData} />
     </div>
   );
 }
