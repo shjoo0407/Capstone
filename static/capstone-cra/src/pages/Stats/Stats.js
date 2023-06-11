@@ -23,6 +23,44 @@ function Stats() {
   const [data, setData] = useState(null);
   const [selectedButton, setSelectedButton] = useState("weekly");
 
+  const testdata = {
+    kcal: [
+      { x: "2023/06/05", y: 0 },
+      { x: "2023/06/06", y: 0 },
+      { x: "2023/06/07", y: 0 },
+      { x: "2023/06/08", y: 0 },
+      { x: "2023/06/09", y: 0 },
+      { x: "2023/06/10", y: 0 },
+      { x: "2023/06/11", y: 623.0 },
+    ],
+    carbon: [
+      { x: "2023/06/05", y: 0 },
+      { x: "2023/06/06", y: 0 },
+      { x: "2023/06/07", y: 0 },
+      { x: "2023/06/08", y: 0 },
+      { x: "2023/06/09", y: 0 },
+      { x: "2023/06/10", y: 0 },
+      { x: "2023/06/11", y: 623.0 },
+    ],
+    pro: [
+      { x: "2023/06/05", y: 0 },
+      { x: "2023/06/06", y: 0 },
+      { x: "2023/06/07", y: 0 },
+      { x: "2023/06/08", y: 0 },
+      { x: "2023/06/09", y: 0 },
+      { x: "2023/06/10", y: 0 },
+      { x: "2023/06/11", y: 623.0 },
+    ],
+    fat: [
+      { x: "2023/06/05", y: 0 },
+      { x: "2023/06/06", y: 0 },
+      { x: "2023/06/07", y: 0 },
+      { x: "2023/06/08", y: 0 },
+      { x: "2023/06/09", y: 0 },
+      { x: "2023/06/10", y: 0 },
+      { x: "2023/06/11", y: 623.0 },
+    ],
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -42,8 +80,10 @@ function Stats() {
 
         if (response.ok) {
           const responseJson = await response.json();
+          const txt = await response.text();
+          console.log("responseJson", responseJson);
+          console.log("Txt", txt);
           setData(responseJson);
-          console.log(JSON.stringify(data));
         } else {
           throw new Error("GET 요청에 실패했습니다.");
         }
@@ -145,7 +185,8 @@ function Stats() {
               1년
             </button>
           </div>
-          <Chart data={data} />
+          {data && <Chart data={data} />}
+          {/* {testdata && <Chart data={testdata} />} */}
         </div>
       </div>
     </div>

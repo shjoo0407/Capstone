@@ -231,6 +231,8 @@ function Chart({ data }) {
     },
   ];
 
+  console.log(statsData);
+
   // const statsData = [
   //   {
   //     id: "칼로리",
