@@ -25,7 +25,10 @@ function Success() {
       {!username && <HeaderNav />}
       <div className="main">
         <div className="success-content">
-          <div className="success-title">환영합니다, {username}님!</div>
+          <div className="success-title">회원가입 완료!</div>
+          <div className="success-subtitle">
+            로그인 후 Cal로리 서비스를 이용해보세요.
+          </div>
           <img src={WelcomeImg} alt="환영 사진" className="success-img" />
         </div>
       </div>
