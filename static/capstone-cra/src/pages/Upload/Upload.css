@@ -143,3 +143,23 @@
 .nutrition-item .content {
   margin-left: 14px;
 }
+
+.modified-name {
+  display: flex;
+  align-items: flex-start;
+}
+
+.modified-label {
+  color: rgb(94, 94, 94);
+  font-weight: 600;
+}
+
+.modified-name input {
+  height: 26px;
+  margin-left: 6px;
+}
+
+/* const [cal, setCal] = useState([]);
+  const [carbon, setCarbon] = useState([]);
+  const [protein, setProtein] = useState([]);
+  const [fat, setFat] = useState([]); */

@@ -1,4 +1,32 @@
-.test {
-  font-size: 50px;
-  margin-top: 150px;
+.main {
+  display: flex;
+  justify-content: center;
+}
+
+.success-content {
+  position: relative;
+  padding: 24px 48px;
+  margin-top: 80px;
+  background-color: #ffffff;
+  width: 420px;
+  height: 330px;
+  /* box-shadow: 4px 4px 4px 1px rgba(94, 94, 94, 0.1); */
+  /* box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.1),
+    0 4px 4px rgba(0, 0, 0, 0.1), 0 8px 4px rgba(0, 0, 0, 0.05); */
+  /* box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1); */
+  box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  border-radius: 15px;
+}
+
+.success-title {
+  font-size: 32px;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.success-img {
+  margin-top: 16px;
+  width: 140px;
+  height: auto;
 }
