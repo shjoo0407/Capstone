@@ -80,10 +80,8 @@ function Stats() {
 
         if (response.ok) {
           const responseJson = await response.json();
-          const txt = await response.text();
-          console.log("responseJson", responseJson);
-          console.log("Txt", txt);
           setData(responseJson);
+          console.log("data", data);
         } else {
           throw new Error("GET 요청에 실패했습니다.");
         }
@@ -94,6 +92,10 @@ function Stats() {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    console.log("data", data);
+  }, [data]);
 
   const handleButtonClick = async (e) => {
     const type = e.target.value;
@@ -107,7 +109,12 @@ function Stats() {
         throw new Error("토큰이 없습니다.");
       }
 
-      const apiUrl = "api/main/stats/{type}";
+      let apiUrl = `/api/main/stats/${type}/`;
+
+      if (type === "weekly") {
+        apiUrl = "/api/main/stats/";
+      }
+
       const response = await fetch(apiUrl, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -124,6 +131,10 @@ function Stats() {
       console.error("GET 요청 오류:", error);
     }
   };
+
+  if (!data) {
+    return null;
+  }
 
   return (
     <div>
@@ -185,7 +196,7 @@ function Stats() {
               1년
             </button>
           </div>
-          {data && <Chart data={data} />}
+          {data ? <Chart data={data} /> : <p>로 딩 중.....</p>}
           {/* {testdata && <Chart data={testdata} />} */}
         </div>
       </div>
