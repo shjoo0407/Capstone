@@ -188,13 +188,13 @@ function Upload() {
 
   const [deleteStatus, setDeleteStatus] = useState("");
 
-  const handleDelete = (menuId) => {
+  const handleDelete = (menuId, date) => {
     const token = jsonLocalStorage.getItem("token");
     if (!token) {
       console.error("토큰이 없습니다!!!!");
       return;
     }
-    fetch(`api/menu/${menuId}`, {
+    fetch(`/api/main/menu/${date}/${menuId}/`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
