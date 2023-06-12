@@ -17,6 +17,8 @@ from datetime import date, datetime, timedelta
 from django.core.files.storage import FileSystemStorage
 import os
 from django.conf import settings
+from django.db.models import Count
+from django.db.models.functions import TruncDate
 
 
 # Create your views here.
@@ -108,7 +110,6 @@ def Daily(request):
             return JsonResponse(data, safe=False)
         return JsonResponse({'message': '잘못된 요청'}, status=500)
     return JsonResponse({'message': '유효하지 않은 토큰'}, status=500)
-
 @csrf_exempt
 def UploadDate(request, formattedDate):
     if validate_token(request):
@@ -179,6 +180,7 @@ def UploadDate(request, formattedDate):
 
             return JsonResponse(data, safe=False, status=200)
 
+
         #사진 업로드 버튼 "다음 단계"
     #     elif request.method == "POST":
     #         userid = get_id_from_token(request)
@@ -227,7 +229,7 @@ def Statistics(request):
                 data = get_stat(userid, 7)
                 return JsonResponse(data, safe=False, status=200)
 
-            elif request.path == '/api/main/stats/month1/':
+            elif request.path == '/api/main/stats/month/':
                 data = get_stat(userid, 30)
                 return JsonResponse(data, safe=False, status=200)
 
