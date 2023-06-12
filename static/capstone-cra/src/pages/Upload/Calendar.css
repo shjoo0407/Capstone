@@ -63,16 +63,17 @@
 }
 
 .calendar-kcal {
-  background-color: tomato;
   width: 115px;
   text-align: right;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  font-size: 13px;
+  font-size: 14px;
+  color: black;
 }
 
 .spoon-img {
-  height: 13px;
+  height: 14px;
   width: auto;
+  margin-right: 4px;
 }
