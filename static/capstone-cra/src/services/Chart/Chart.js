@@ -68,7 +68,7 @@ const MyResponsiveLine = ({ data }) => (
   />
 );
 
-function Chart({ data }) {
+function Chart({ data, over3Month }) {
   const statsData = [
     {
       id: "칼로리",
@@ -94,7 +94,26 @@ function Chart({ data }) {
 
   return (
     <div style={{ height: 500, width: 1200 }}>
-      <MyResponsiveLine data={statsData} />
+      {over3Month && (
+        <MyResponsiveLine
+          data={statsData}
+          axisBottom={null}
+          enablePoints={false}
+          enableGridX={false}
+        />
+      )}
+      {!over3Month && (
+        <MyResponsiveLine
+          data={statsData}
+          axisBottom={{
+            tickSize: 5,
+            tickPadding: 5,
+            tickRotation: 0,
+            legendOffset: 36,
+            legendPosition: "middle",
+          }}
+        />
+      )}
     </div>
   );
 }
