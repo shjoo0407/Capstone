@@ -96,6 +96,7 @@ def UploadDate(request, formattedDate):
             )
 
             menulist = [menu['name'] for menu in Gallery.objects.filter(user=userid, upload_date__range=(date, next_date)).order_by('upload_date').values('name')]
+            print(menulist)
 
             if not aggregated_data:
                 data = {
@@ -209,7 +210,34 @@ def Result(request):
 
         return JsonResponse({'message': '최종 업로드 성공'}, status=200)
     return JsonResponse({'error: 잘못된 요청'}, status=400)
+@csrf_exempt
+def DeleteMenu(request, date, menuId):
+    if not validate_token(request):
+        return JsonResponse({'error': '유효하지 않은 토큰'}, status=401)
 
+    if request.method == "DELETE":
+        userid = get_id_from_token(request)
+
+        format_date = datetime.strptime(date, '%Y%m%d')
+        next_date = format_date + timedelta(days=1)
+
+        menulist = [menu['name'] for menu in
+                    Gallery.objects.filter(user=userid, upload_date__range=(format_date, next_date)).order_by(
+                        'upload_date').values('name')]
+
+        if menuId >= len(menulist):
+            return JsonResponse({'error: 잘못된 인덱스'}, status=400)
+
+        menu_to_delete = menulist[menuId]
+
+        menu_obj = Gallery.objects.filter(user=userid, name=menu_to_delete).first()
+        if menu_obj:
+            menu_obj.delete()
+            return JsonResponse({'message': '메뉴 삭제 성공'}, status=200)
+        else:
+            return JsonResponse({'error': '해당 메뉴를 찾을 수 없음'}, status=404)
+    else:
+        return JsonResponse({'error: 잘못된 요청'}, status=400)
 
 
 # 식단 업로드 페이지 -> 날짜 선택 -> '다음 단계' -> 예측이 틀렸을 때 직접 검색
