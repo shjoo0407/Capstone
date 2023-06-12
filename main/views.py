@@ -37,6 +37,7 @@ def Upload(request):
                 .values('date', 'total_calories')
             )
             print(f"aggregated_data: {aggregated_data}")
+
             data = [
                 {
                     'date': item['date'].strftime('%Y%m%d')if item['date'] is not None else None,
@@ -243,12 +244,21 @@ def Statistics(request):
     if validate_token(request):
         if request.method == 'GET':
             userid = get_id_from_token(request)
-            data = get_stat(userid)
-            print(f"성공, data: {data}")
-            print(f"type : {type(data)}")
-            #data = json.dumps(data)
-            print(f"type : {type(data)}")
-            return JsonResponse(data, safe=False, status=200)
+            if request.path == '/api/main/stats':
+                data = get_stat(userid, 7)
+                return JsonResponse(data, safe=False, status=200)
+
+            elif request.path == '/api/main/stats/month1':
+                data = get_stat(userid, 30)
+                return JsonResponse(data, safe=False, status=200)
+
+            elif request.path == '/api/main/stats/month3':
+                data = get_stat(userid, 90)
+                return JsonResponse(data, safe=False, status=200)
+
+            elif request.path == '/api/main/stats/year':
+                data = get_stat(userid, 365)
+                return JsonResponse(data, safe=False, status=200)
 
         print("실패1: 잘못된 요청")
         return JsonResponse({'message': '잘못된 요청'}, status=500)
@@ -256,9 +266,9 @@ def Statistics(request):
     return JsonResponse({'message': '유효하지 않은 토큰'}, status=500)
 
 @csrf_exempt
-def get_stat(userid):
+def get_stat(userid, p):
     today = datetime.now().date()
-    week_ago = today - timedelta(days=6)
+    week_ago = today - timedelta(days=p-1)
 
     stat = {
         'kcal' : [],
@@ -267,7 +277,7 @@ def get_stat(userid):
         'fat' : []
     }
 
-    for i in range(7):
+    for i in range(p):
         date = week_ago + timedelta(days=i)
         next_date = date + timedelta(days=1)
 
@@ -438,11 +448,10 @@ def read_json_file(file_path):
 def calculator(userid): # 권장 섭취량(칼로리, 탄수화물, 단백질, 지방) 계산기
     user = Account.objects.get(id=userid)
     today = date.today()
-    type(today)
 
     gender, birth, height, weight = user.gender, user.birth, user.height, user.weight
     birth_year, birth_month, birth_day = str(birth).split('-')[0], str(birth).split('-')[1], str(birth).split('-')[2]
-
+    print(birth_year, birth_month, birth_day)
     # 나이 계산
     if today.month > int(birth_month) or (today.month == int(birth_month) and today.day >= int(birth_day)):
         age = today.year - int(birth_year)
