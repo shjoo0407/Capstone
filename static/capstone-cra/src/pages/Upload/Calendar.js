@@ -4,6 +4,7 @@ import "../../styles/common.css";
 import "./Calendar.css";
 import leftArrow from "../../assets/img/left-arrow.png";
 import rightArrow from "../../assets/img/right-arrow.png";
+import spoon from "../../assets/img/spoon.png";
 import HeaderNav from "../../components/Header/HeaderNav";
 import LoginHeaderNav from "../../components/Header/LoginHeaderNav";
 
@@ -213,8 +214,17 @@ const Calendar = () => {
                     handleDateClick(item.year, item.month, item.day)
                   }
                 >
-                  {item.day}
-                  {item.kcal && <div>{item.kcal}</div>}
+                  <div>{item.day}</div>
+                  {item.kcal !== undefined && (
+                    <div className="calendar-kcal">
+                      <img
+                        className="spoon-img"
+                        src={spoon}
+                        alt="숟가락과 포크 이미지"
+                      />
+                      <span>{item.kcal}kcal</span>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
