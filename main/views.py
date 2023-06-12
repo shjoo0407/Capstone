@@ -17,6 +17,8 @@ from datetime import date, datetime, timedelta
 from django.core.files.storage import FileSystemStorage
 import os
 from django.conf import settings
+from django.db.models import Count
+from django.db.models.functions import TruncDate
 
 
 # Create your views here.
@@ -120,41 +122,33 @@ def Daily(request):
             return JsonResponse(data, safe=False)
         return JsonResponse({'message': '잘못된 요청'}, status=500)
     return JsonResponse({'message': '유효하지 않은 토큰'}, status=500)
-
 @csrf_exempt
 def UploadDate(request, formattedDate):
     if validate_token(request):
         if request.method == 'GET':
             userid = get_id_from_token(request)
+
             # 권장 섭취량
             recommended = calculator(userid) # 권장 섭취량([칼로리, 탄수화물, 단백질, 지방])
             # 날짜별 각 음식의 영양소 정보
-            date = datetime.strptime(formattedDate, '%Y%m%d').date()
-            food_data = (
-                Gallery.objects.filter(user=userid, upload_date=date)
-                .values('name', 'kcal', 'pro', 'carbon', 'fat')
-            )
 
-            # 날짜별 각 영양소의 총합
+            date = datetime.strptime(formattedDate, '%Y%m%d')
+            next_date = date + timedelta(days=1)
+
             aggregated_data = (
-                Gallery.objects.filter(user=userid, upload_date=date)
+                Gallery.objects.filter(user=userid, upload_date__range=(date, next_date))
+                .annotate(date=TruncDate('upload_date'))
+                .values('date')
                 .annotate(
                     total_kcal=Sum('kcal'),
-                    total_pro=Sum('pro'),
                     total_carbon=Sum('carbon'),
-                    total_fat=Sum('fat')
+                    total_pro=Sum('pro'),
+                    total_fat=Sum('fat'),
                 )
-                .values('total_kcal', 'total_pro', 'total_carbon', 'total_fat').first()
-            )
-            menulist = Gallery.objects.filter(user=userid).order_by('upload_date').values_list('name', flat=True)
-            # data = {
-            #     'date': date,
-            #     'total_kcal': aggregated_data['total_kcal'],
-            #     'total_pro': aggregated_data['total_pro'],
-            #     'total_carbon': aggregated_data['total_carbon'],
-            #     'total_fat': aggregated_data['total_fat'],
-            #     'foods': list(food_data)
-            # }
+            )[0]
+
+            menulist = [menu['name'] for menu in Gallery.objects.filter(user=userid, upload_date__range=(date, next_date)).order_by('upload_date').values('name')]
+
             if aggregated_data is None:
                 data = {
                     'menulist': [],
@@ -188,7 +182,7 @@ def UploadDate(request, formattedDate):
                     },
                     'protein': {
                         'recommended': recommended[2],
-                        'actual': int(aggregated_data['total_protein']),
+                        'actual': int(aggregated_data['total_pro']),
                     },
                     'fat': {
                         'recommended': recommended[3],
@@ -197,6 +191,7 @@ def UploadDate(request, formattedDate):
                 }
 
             return JsonResponse(data, safe=False, status=200)
+
 
         #사진 업로드 버튼 "다음 단계"
     #     elif request.method == "POST":
@@ -246,7 +241,7 @@ def Statistics(request):
                 data = get_stat(userid, 7)
                 return JsonResponse(data, safe=False, status=200)
 
-            elif request.path == '/api/main/stats/month1/':
+            elif request.path == '/api/main/stats/month/':
                 data = get_stat(userid, 30)
                 return JsonResponse(data, safe=False, status=200)
 
