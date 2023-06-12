@@ -17,6 +17,7 @@ from datetime import date, datetime, timedelta
 from django.core.files.storage import FileSystemStorage
 import os
 from django.conf import settings
+from django.core.cache import cache
 
 
 # Create your views here.
@@ -124,56 +125,90 @@ def UploadDate(request, formattedDate):
             return JsonResponse(data, safe=False, status=200)
 
 
-# 식단 업로드 페이지 -> 날짜 선택 -> '다음 단계'
+# 식단 업로드 페이지 -> 날짜 선택 -> '다음 단계' 클릭
 @csrf_exempt
 def ImageUpload(request):
     if not validate_token(request):
         return JsonResponse({'error':'유효하지 않은 토큰'}, status=401)
+
     if request.method == "POST":
         userid = get_id_from_token(request)
-        food_image = request.FILES.get('photo')
+        food_image = request.FILES.get('photo') # 음식 이미지
 
-        # 새로운 Gallery 객체 생성
+        # Gallery 객체 cache에 임시 저장
         gallery = Gallery(user_id=userid, name='', total='', kcal='', pro='', carbon='', fat='', food_image=food_image)
-        # DB에 저장
-        gallery.save()
+        cache.set('temp', gallery, timeout=120)
 
+        # predict 수행
         uploaded_file_url = handle_uploaded_file(food_image)
         print(f"uploaded_file_url : {uploaded_file_url}")
-        file_path = os.path.join(settings.MEDIA_ROOT, uploaded_file_url.lstrip('/media/'))
-        predicted_name = prediction(file_path) # 모델이 예측한 음식 이름
+        file_path = os.path.join(settings.MEDIA_ROOT, uploaded_file_url.lstrip('/media/')) # 파일 경로 URL
 
+        predicted_name = prediction(file_path) # 모델이 예측한 음식 이름 받아옴
+
+        # 업로드 성공
         try:
             food = Food.objects.get(name=predicted_name)
+            data = {
+                'message': '사진 업로드 성공',
+                'predicted': predicted_name,
+                'kcal': food.kcal,
+                'carbon': food.carbon,
+                'pro': food.pro,
+                'fat': food.fat,
+                 }
+            return JsonResponse(data, status=200)
+
         except Food.DoesNotExist:
             return JsonResponse({'error': f"{predicted_name} 을 찾을 수 없습니다."}, status=404)
+    # POST 요청이 아닌 경우
+    return JsonResponse({"error": "Invalid request"}, status=400)
 
-        gallery.name = predicted_name
-        gallery.total = food.total
-        gallery.kcal = food.kcal
-        gallery.carbon = food.carbon
-        gallery.pro = food.pro
-        gallery.fat = food.fat
+
+# 식단 업로드 페이지 -> 날짜 선택 -> '다음 단계' 클릭 -> '식단 업로드' 최종 클릭
+@csrf_exempt
+def Result(request):
+    if not validate_token(request):
+        return JsonResponse({'error': '유효하지 않은 토큰'}, status=401)
+
+    if request.method == "POST":
+        userid = get_id_from_token(request) # userid
+
+        request_data = json.loads(request.body)
+
+        predicted = request_data.get('name') # 프론트에서 보낸 예측한 음식 이름 저장
+        predicted_data = search(predicted)
+
+        gallery = cache.get('temp') # 캐시에서 gallery 객체 꺼내옴
+
+        # 꺼내온 객체 Gallery 테이블에 저장
+        gallery.name = predicted_data['name']
+        gallery.total = predicted_data['total']
+        gallery.kcal = predicted_data['kcal']
+        gallery.pro = predicted_data['pro']
+        gallery.carbon = predicted_data['carbon']
+        gallery.fat = predicted_data['fat']
+
         gallery.save()
 
-        return JsonResponse({"message": "업로드 완료",
-                             'image_id': gallery.image_id,
-                             'user_id': userid,
-                             'upload date': gallery.upload_date,
-                             'name': gallery.name,
-                             'total': gallery.total,
-                             'kcal': gallery.kcal,
-                             'carbon': gallery.carbon,
-                             'pro': gallery.pro,
-                             'fat': gallery.fat
-                             }, status=200)
-    else:
-        # POST 요청이 아닌 경우
-        return JsonResponse({"error": "Invalid request"}, status=400)
+        return JsonResponse({'message': '최종 업로드 성공'}, status=200)
+    return JsonResponse({'error: 잘못된 요청'}, status=400)
 
 
 
+# 식단 업로드 페이지 -> 날짜 선택 -> '다음 단계' -> 예측이 틀렸을 때 직접 검색
+def search(predicted):
+    searched = Food.objects.get(name=predicted)
 
+    data = {
+        'name': predicted,
+        'total': searched.total,
+        'kcal': searched.kcal,
+        'carbon': searched.carbon,
+        'pro': searched.pro,
+        'fat': searched.fat,
+    }
+    return data
 
 # Daily 식단 페이지 조회
 @csrf_exempt
@@ -258,35 +293,36 @@ def handle_uploaded_file(uploaded_file):
 # model 예측(torchserve)
 @csrf_exempt
 def prediction(image_path):
-    # 이미지 파일 열기
-    with open(image_path, 'rb') as f:
-        image_data = f.read() # 이미지
-
-    # torchserve API 호출
-    url = 'http://[퍼블릭IP주소]/predictions/model1'  # torchserve의 예측 엔드포인트 URL
-    headers = {'Content-Type': 'application/octet-stream'}
-    response = requests.post(url, headers=headers, data=image_data)
-
-    # 결과 확인
-    if response.status_code == 200:
-        result = response.json()
-        sorted_data = sorted(result.items(), key=lambda x: x[1], reverse=True) # value 값으로 정렬
-        sorted_keys = [item[0] for item in sorted_data]
-        label_path = os.path.join(settings.STATIC_ROOT, 'model_label.json')
-        label_data = read_json_file(label_path)
-        top5 = {}
-
-        for key in sorted_keys:
-            label = label_data[key], prob = result[key]
-            top5[label] = prob
-
-        top5_json = json.dumps(top5) # json 파일로 변환
-        print("성공")
-        print(f"분류 결과 : {top5_json}")
-        return list(top5.keys())[0] # top 1의 음식 이름
-    else:
-        print("실패")
-        return None
+    return "홍어무침"
+    # # 이미지 파일 열기
+    # with open(image_path, 'rb') as f:
+    #     image_data = f.read() # 이미지
+    #
+    # # torchserve API 호출
+    # url = 'http://[퍼블릭IP주소]/predictions/model1'  # torchserve의 예측 엔드포인트 URL
+    # headers = {'Content-Type': 'application/octet-stream'}
+    # response = requests.post(url, headers=headers, data=image_data)
+    #
+    # # 결과 확인
+    # if response.status_code == 200:
+    #     result = response.json()
+    #     sorted_data = sorted(result.items(), key=lambda x: x[1], reverse=True) # value 값으로 정렬
+    #     sorted_keys = [item[0] for item in sorted_data]
+    #     label_path = os.path.join(settings.STATIC_ROOT, 'model_label.json')
+    #     label_data = read_json_file(label_path)
+    #     top5 = {}
+    #
+    #     for key in sorted_keys:
+    #         label = label_data[key], prob = result[key]
+    #         top5[label] = prob
+    #
+    #     top5_json = json.dumps(top5) # json 파일로 변환
+    #     print("성공")
+    #     print(f"분류 결과 : {top5_json}")
+    #     return list(top5.keys())[0] # top 1의 음식 이름
+    # else:
+    #     print("실패")
+    #     return None
 
 
 # json 파일 읽어오기
