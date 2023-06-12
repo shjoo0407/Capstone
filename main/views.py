@@ -132,11 +132,11 @@ def UploadDate(request, formattedDate):
                     total_pro=Sum('pro'),
                     total_fat=Sum('fat'),
                 )
-            )[0]
+            )
 
             menulist = [menu['name'] for menu in Gallery.objects.filter(user=userid, upload_date__range=(date, next_date)).order_by('upload_date').values('name')]
 
-            if aggregated_data is None:
+            if not aggregated_data:
                 data = {
                     'menulist': [],
                     'calorie': {
@@ -161,19 +161,19 @@ def UploadDate(request, formattedDate):
                     'menulist': menulist,
                     'calorie': {
                         'recommended': recommended[0],
-                        'actual': int(aggregated_data['total_kcal']),
+                        'actual': int(aggregated_data[0]['total_kcal']),
                     },
                     'carbonhydrate': {
                         'recommended': recommended[1],
-                        'actual': int(aggregated_data['total_carbon']),
+                        'actual': int(aggregated_data[0]['total_carbon']),
                     },
                     'protein': {
                         'recommended': recommended[2],
-                        'actual': int(aggregated_data['total_pro']),
+                        'actual': int(aggregated_data[0]['total_pro']),
                     },
                     'fat': {
                         'recommended': recommended[3],
-                        'actual': int(aggregated_data['total_fat']),
+                        'actual': int(aggregated_data[0]['total_fat']),
                     },
                 }
 
