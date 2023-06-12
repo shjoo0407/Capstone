@@ -316,8 +316,7 @@ function Upload() {
                     <span className="title">칼로리</span>
                     <CalorieBarChart
                       width="320"
-                      // percent={getPercent(cal[0], cal[1])}
-                      percent={getPercent(1280, 823)}
+                      percent={getPercent(cal[0], cal[1])}
                       color="rgba(46, 204, 113, 0.72)"
                     />
                     <span className="content">
@@ -328,36 +327,33 @@ function Upload() {
                     <span className="title">탄수화물</span>
                     <CalorieBarChart
                       width="320"
-                      // percent={getPercent(carbon[0], carbon[1])}
-                      percent={getPercent(520, 222)}
+                      percent={getPercent(carbon[0], carbon[1])}
                       color="rgb(216, 100, 169)"
                     />
                     <span className="content">
-                      {carbon[1]}/{carbon[0]}kcal
+                      {carbon[1]}/{carbon[0]}g
                     </span>
                   </li>
                   <li className="nutrition-item">
                     <span className="title">단백질</span>
                     <CalorieBarChart
                       width="320"
-                      // percent={getPercent(protein[0], protein[1])}
-                      percent={getPercent(70, 59)}
+                      percent={getPercent(protein[0], protein[1])}
                       color="rgb(122, 168, 116)"
                     />
                     <span className="content">
-                      {protein[1]}/{protein[0]}kcal
+                      {protein[1]}/{protein[0]}g
                     </span>
                   </li>
                   <li className="nutrition-item">
                     <span className="title">지방</span>
                     <CalorieBarChart
                       width="320"
-                      // percent={getPercent(fat[0], fat[1])}
-                      percent={getPercent(30, 48)}
+                      percent={getPercent(fat[0], fat[1])}
                       color="rgb(235, 176, 45)"
                     />
                     <span className="content">
-                      {fat[1]}/{fat[0]}kcal
+                      {fat[1]}/{fat[0]}g
                     </span>
                   </li>
                 </ul>

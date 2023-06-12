@@ -4,6 +4,7 @@ import "../../styles/common.css";
 import "./Calendar.css";
 import leftArrow from "../../assets/img/left-arrow.png";
 import rightArrow from "../../assets/img/right-arrow.png";
+import spoon from "../../assets/img/spoon.png";
 import HeaderNav from "../../components/Header/HeaderNav";
 import LoginHeaderNav from "../../components/Header/LoginHeaderNav";
 
@@ -12,7 +13,6 @@ import { useNavigate } from "react-router-dom";
 const Calendar = () => {
   const navigate = useNavigate();
   const API_URL = "/api/main/upload/";
-  // date(000000), total_calories
 
   const jsonLocalStorage = {
     setItem: (key, value) => {
@@ -23,9 +23,9 @@ const Calendar = () => {
     },
   };
 
-  const username = jsonLocalStorage.getItem("username");
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [data, setData] = useState(null);
+  const username = jsonLocalStorage.getItem("username"); // 사용자 이름
+  const [currentDate, setCurrentDate] = useState(new Date()); // 현재 날짜
+  const [data, setData] = useState(null); // 날짜별 총 칼로리 (GET)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,7 +45,6 @@ const Calendar = () => {
         if (response.ok) {
           const responseJson = await response.json();
           setData(responseJson);
-          console.log(data);
         } else {
           throw new Error("GET 요청에 실패했습니다.");
         }
@@ -57,7 +56,7 @@ const Calendar = () => {
     fetchData();
   }, []);
 
-  // 이전 달로 이동
+  // 이전 달로 이동하기
   const goToPreviousMonth = () => {
     const previousMonth = new Date(
       currentDate.getFullYear(),
@@ -66,7 +65,7 @@ const Calendar = () => {
     setCurrentDate(previousMonth);
   };
 
-  // 다음 달로 이동
+  // 다음 달로 이동하기
   const goToNextMonth = () => {
     const nextMonth = new Date(
       currentDate.getFullYear(),
@@ -95,16 +94,18 @@ const Calendar = () => {
 
     const daysInMonth = getDaysInMonth(year, month);
     const firstDayOfWeek = new Date(year, month, 1).getDay(); // 요일 반환
-    console.log("firstDayOfWeek", firstDayOfWeek);
 
-    const calendarData = [];
-    const result = {};
+    const calendarData = []; // 캘린더 데이터
+    const result = {}; // 받은 data를 기반으로 일별 총 칼로리를 object 형태로 저장
+
+    console.log("GET해서 받아온 일별 총 칼로리입니다: ", data); // get해서 받은 data 출력
+
     data.forEach((item) => {
       result[item.date] = item.total_calories;
     });
-    console.log(result);
+    console.log("생성된 object입니다:", result);
 
-    // 서버 get 요청 용 formatted date (000000)
+    // formatted date: 00000000
     const getFormattedDate = (year, month, day) => {
       const formattedDate = `${year}${month.toString().padStart(2, "0")}${day
         .toString()
@@ -115,9 +116,6 @@ const Calendar = () => {
     // 이전 달의 날짜
     for (let i = firstDayOfWeek - 1; i >= 0; i--) {
       const day = new Date(year, month, -i);
-      console.log(
-        getFormattedDate(day.getFullYear(), day.getMonth() + 1, day.getDate()) // 현재 날짜 format: 000000
-      );
       calendarData.push({
         year: day.getFullYear(),
         month: day.getMonth() + 1,
@@ -134,8 +132,8 @@ const Calendar = () => {
         day.getMonth() + 1,
         day.getDate()
       );
+      // result에 key가 있으면, kcal을 calendarData에 저장
       if (result.hasOwnProperty(formattedDay)) {
-        console.log(result[formattedDay]);
         calendarData.push({
           year: day.getFullYear(),
           month: day.getMonth() + 1,
@@ -156,6 +154,7 @@ const Calendar = () => {
     return calendarData;
   };
 
+  // useEffect에서 api를 호출중일 때를 위해
   if (!data) {
     return null;
   }
@@ -165,12 +164,6 @@ const Calendar = () => {
     month: "long",
     year: "numeric",
   });
-  //  console.log(calendarData);
-  //  const result = {};
-  //  data.forEach(item => {
-  //  result[item.date] = item.total_calories;
-  //  });
-  //  console.log(result);
 
   return (
     <div>
@@ -196,7 +189,7 @@ const Calendar = () => {
                 />
               </button>
             </div>
-            <div>{JSON.stringify(data)}</div>
+
             <div className="calendar">
               {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
                 <div className="calendar-day-label" key={day}>
@@ -213,8 +206,17 @@ const Calendar = () => {
                     handleDateClick(item.year, item.month, item.day)
                   }
                 >
-                  {item.day}
-                  {item.kcal && <div>{item.kcal}</div>}
+                  <div>{item.day}</div>
+                  {item.kcal !== undefined && (
+                    <div className="calendar-kcal">
+                      <img
+                        className="spoon-img"
+                        src={spoon}
+                        alt="숟가락과 포크 이미지"
+                      />
+                      <span>{item.kcal}kcal</span>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

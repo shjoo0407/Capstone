@@ -6,6 +6,10 @@
   padding-left: 20px;
 }
 
+.daily-daily {
+  display: flex;
+}
+
 .calendar {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -68,4 +72,8 @@
 .arrow-img {
   width: 16px;
   height: auto;
+}
+
+.daily-daily .upload-right-container {
+  margin-top: 40px;
 }
