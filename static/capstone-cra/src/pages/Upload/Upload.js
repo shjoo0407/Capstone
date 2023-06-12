@@ -43,13 +43,13 @@ function Upload() {
   const [protein, setProtein] = useState([]);
   const [fat, setFat] = useState([]);
 
-  const [menuList, setMenuList] = useState([]); // 해당 날짜의 식단 리스트
+  const [menuList, setMenuList] = useState(null); // 해당 날짜의 식단 리스트
 
   // 1차 업로드 후 받은 음식 data
   const [foodData, setFoodData] = useState(null);
 
   // 해당 음식이 아닌 경우 input
-  const [modified, setModified] = useState("");
+  const [modified, setModified] = useState(null);
 
   // test용 menu item
   const menuItems = [
@@ -110,21 +110,6 @@ function Upload() {
     if (!selectedFile) {
       return;
     }
-    // const formData = new FormData();
-    // formData.append("photo", selectedFile);
-
-    // fetch("api/upload/", {
-    //   method: "POST",
-    //   body: formData,
-    // })
-    //   .then((response) => response.json())
-    //   .then((data) => {
-    //     console.log(data);
-    //     // setFoodName(data.foodName);
-    //     // setCalories(data.calories);
-    //     setNextForm(true);
-    //   })
-    //   .catch((error) => console.error("Error:", error));
     try {
       const token = jsonLocalStorage.getItem("token");
       if (!token) {
@@ -159,29 +144,6 @@ function Upload() {
 
   // 최종 업로드
   const handleResultUpload = async () => {
-    // if (!selectedFile || !foodData) {
-    //   return;
-    // }
-
-    // const formData = new FormData();
-    // formData.append("photo", selectedFile);
-    // formData.append("foodName", foodName);
-    // formData.append("calories", calories);
-
-    // fetch("api/result", {
-    //   method: "POST",
-    //   body: formData,
-    // })
-    //   .then((response) => response.json())
-    //   .then((data) => {
-    //     console.log("Upload successful:", data);
-    //     setNextForm(false);
-    //   })
-    //   .catch((error) => console.error("Error:", error));
-
-    // const realFoodName = modified ? modified : foodData.name;
-    const realFoodName = modified ? modified : foodData.name;
-
     try {
       const token = jsonLocalStorage.getItem("token");
       if (!token) {
@@ -190,9 +152,10 @@ function Upload() {
       }
       const realFoodName = modified ? modified : foodData.name;
       const formData = new FormData();
-      formData.append("photo", selectedFile);
-      formData.append("foodData", foodData);
+      // formData.append("r", selectedFile);
+      // formData.append("isCorrect", foodData);
       formData.append("realFoodName", realFoodName);
+      console.log(realFoodName);
 
       const response = await fetch("api/result", {
         method: "POST",
@@ -208,7 +171,7 @@ function Upload() {
         console.log("Upload successful:", data);
         // 값 초기화
         setNextForm(false);
-        setModified("");
+        setModified(null);
         setFoodData(null);
         fetchData();
       } else {
@@ -255,6 +218,7 @@ function Upload() {
   function handleInputChange(e) {
     const userValue = e.target.value;
     setModified(userValue);
+    console.log(modified);
   }
 
   const getPercent = (recommended, actual) => {
@@ -265,6 +229,10 @@ function Upload() {
     }
     return result;
   };
+
+  if (!menuList) {
+    return null;
+  }
 
   return (
     <div>
