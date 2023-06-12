@@ -89,7 +89,7 @@ const Calendar = () => {
   };
 
   // 현재 월의 캘린더 데이터 생성
-  const generateCalendarData = () => {
+  const generateCalendarData = (data) => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
 
@@ -98,13 +98,17 @@ const Calendar = () => {
     console.log("firstDayOfWeek", firstDayOfWeek);
 
     const calendarData = [];
-    console.log(calendarData);
+    const result = {};
+    data.forEach((item) => {
+      result[item.date] = item.total_calories;
+    });
+    console.log(result);
 
     // 서버 get 요청 용 formatted date (000000)
     const getFormattedDate = (year, month, day) => {
-      const formattedDate = `${year.toString().substr(2, 2)}${month
+      const formattedDate = `${year}${month.toString().padStart(2, "0")}${day
         .toString()
-        .padStart(2, "0")}${day.toString().padStart(2, "0")}`;
+        .padStart(2, "0")}`;
       return formattedDate;
     };
 
@@ -125,32 +129,53 @@ const Calendar = () => {
     // 현재 달의 날짜
     for (let i = 1; i <= daysInMonth; i++) {
       const day = new Date(year, month, i);
-      calendarData.push({
-        year: day.getFullYear(),
-        month: day.getMonth() + 1,
-        day: day.getDate(),
-        isCurrentMonth: true,
-      });
+      const formattedDay = getFormattedDate(
+        day.getFullYear(),
+        day.getMonth() + 1,
+        day.getDate()
+      );
+      if (result.hasOwnProperty(formattedDay)) {
+        console.log(result[formattedDay]);
+        calendarData.push({
+          year: day.getFullYear(),
+          month: day.getMonth() + 1,
+          day: day.getDate(),
+          isCurrentMonth: true,
+          kcal: result[formattedDay],
+        });
+      } else {
+        calendarData.push({
+          year: day.getFullYear(),
+          month: day.getMonth() + 1,
+          day: day.getDate(),
+          isCurrentMonth: true,
+        });
+      }
     }
 
     return calendarData;
   };
 
-  const calendarData = generateCalendarData();
+  if (!data) {
+    return null;
+  }
+
+  const calendarData = generateCalendarData(data);
   const monthYearLabel = currentDate.toLocaleString("default", {
     month: "long",
     year: "numeric",
   });
-
-  if (!data) {
-    return null;
-  }
+  //  console.log(calendarData);
+  //  const result = {};
+  //  data.forEach(item => {
+  //  result[item.date] = item.total_calories;
+  //  });
+  //  console.log(result);
 
   return (
     <div>
       {username && <LoginHeaderNav username={username} />}
       {!username && <HeaderNav />}
-
       <div className="main">
         <div className="common-inner main-content">
           <div className="month-container">
@@ -171,6 +196,7 @@ const Calendar = () => {
                 />
               </button>
             </div>
+            <div>{JSON.stringify(data)}</div>
             <div className="calendar">
               {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
                 <div className="calendar-day-label" key={day}>
@@ -188,6 +214,7 @@ const Calendar = () => {
                   }
                 >
                   {item.day}
+                  {item.kcal && <div>{item.kcal}</div>}
                 </div>
               ))}
             </div>
