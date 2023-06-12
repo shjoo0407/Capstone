@@ -144,7 +144,7 @@ def ImageUpload(request):
         print(f"uploaded_file_url : {uploaded_file_url}")
         file_path = os.path.join(settings.MEDIA_ROOT, uploaded_file_url.lstrip('/media/')) # 파일 경로 URL
 
-        predicted_name = prediction(file_path) # 모델이 예측한 음식 이름 받아옴
+        predicted_name = str(prediction(file_path)) # 모델이 예측한 음식 이름 받아옴
 
         # 업로드 성공
         try:
@@ -300,7 +300,7 @@ def prediction(image_path):
         image_data = f.read() # 이미지
 
     # torchserve API 호출
-    url = 'http://[퍼블릭IP주소]/predictions/model1'  # torchserve의 예측 엔드포인트 URL
+    url = 'http://localhost:8080/predictions/model1'  # torchserve의 예측 엔드포인트 URL
     headers = {'Content-Type': 'application/octet-stream'}
     response = requests.post(url, headers=headers, data=image_data)
 
@@ -314,7 +314,8 @@ def prediction(image_path):
         top5 = {}
 
         for key in sorted_keys:
-            label = label_data[key], prob = result[key]
+            label = label_data[key]
+            prob = result[key]
             top5[label] = prob
 
         top5_json = json.dumps(top5) # json 파일로 변환
