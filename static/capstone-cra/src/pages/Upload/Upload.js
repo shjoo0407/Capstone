@@ -331,7 +331,7 @@ function Upload() {
                       color="rgb(216, 100, 169)"
                     />
                     <span className="content">
-                      {carbon[1]}/{carbon[0]}kcal
+                      {carbon[1]}/{carbon[0]}g
                     </span>
                   </li>
                   <li className="nutrition-item">
@@ -342,7 +342,7 @@ function Upload() {
                       color="rgb(122, 168, 116)"
                     />
                     <span className="content">
-                      {protein[1]}/{protein[0]}kcal
+                      {protein[1]}/{protein[0]}g
                     </span>
                   </li>
                   <li className="nutrition-item">
@@ -353,7 +353,7 @@ function Upload() {
                       color="rgb(235, 176, 45)"
                     />
                     <span className="content">
-                      {fat[1]}/{fat[0]}kcal
+                      {fat[1]}/{fat[0]}g
                     </span>
                   </li>
                 </ul>

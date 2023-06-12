@@ -103,7 +103,7 @@ const Calendar = () => {
     data.forEach((item) => {
       result[item.date] = item.total_calories;
     });
-    console.log(result);
+    console.log("생성된 object입니다:", result);
 
     // formatted date: 00000000
     const getFormattedDate = (year, month, day) => {
@@ -189,7 +189,7 @@ const Calendar = () => {
                 />
               </button>
             </div>
-            <div>{JSON.stringify(data)}</div>
+
             <div className="calendar">
               {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
                 <div className="calendar-day-label" key={day}>
