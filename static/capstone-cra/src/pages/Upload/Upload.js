@@ -150,7 +150,7 @@ function Upload() {
         console.error("토큰이 없습니다!!!!");
         return;
       }
-      const realFoodName = modified ? modified : foodData.name;
+      const realFoodName = modified ? modified : foodData.predicted;
       const formData = new FormData();
       // formData.append("r", selectedFile);
       // formData.append("isCorrect", foodData);
@@ -260,7 +260,8 @@ function Upload() {
                     <div className="upload-info">
                       <div className="food-info">
                         <div className="food-name">
-                          {(foodData && foodData.name) || "닭가슴살 샐러드 "}
+                          {(foodData && foodData.predicted) ||
+                            "닭가슴살 샐러드 "}
                         </div>
                         <div className="food-cal">
                           {(foodData && foodData.kcal) || "820kcal"}
