@@ -120,10 +120,6 @@ def UploadDate(request, formattedDate):
             # 날짜별 각 음식의 영양소 정보
             date = datetime.strptime(formattedDate, '%Y%m%d').date()
 
-            print(f"date : {date}")
-
-            print(Gallery.objects.filter(user=userid))
-
             aggregated_data = (
                 Gallery.objects.filter(user=userid)
                 .annotate(date=TruncDate('upload_date'))
