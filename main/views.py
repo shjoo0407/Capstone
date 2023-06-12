@@ -44,18 +44,6 @@ def Upload(request):
                 }
                 for item in aggregated_data
             ]
-            print(f"data : {data}")
-
-            # galleries = Gallery.objects.filter(user=userid)
-            # # 각 객체의 정보를 JSON 형식으로 변환합니다.
-            # data = [{'name': gallery.name,
-            #          'total': gallery.total,
-            #          'kcal': gallery.kcal,
-            #          'protein': gallery.protein,
-            #          'carbon': gallery.carbon,
-            #          'fat': gallery.fat,
-            #          'uploaded_at': gallery.uploaded_at} for gallery in galleries]
-            # 결과를 반환합니다.
             return JsonResponse(data, safe=False, status=200)
 
         # 식단 업로드 버튼
@@ -449,7 +437,6 @@ def calculator(userid): # 권장 섭취량(칼로리, 탄수화물, 단백질, �
         age = today.year - int(birth_year)
     else:
         age = today.year - int(birth_year) - 1
-
     # 칼로리
     # BMR 계산(해리스-베네딕트 공식)
     if gender == 'M':
