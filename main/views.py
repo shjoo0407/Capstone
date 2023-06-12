@@ -174,12 +174,12 @@ def Result(request):
     if request.method == "POST":
         userid = get_id_from_token(request) # userid
 
-        request_data = json.loads(request.body)
-
-        predicted = request_data.get('name') # 프론트에서 보낸 예측한 음식 이름 저장
+        predicted = request.POST.get('realFoodName') # 프론트에서 보낸 예측한 음식 이름 저장
+        print(f"predicted : {predicted}")
         predicted_data = search(predicted)
 
         gallery = cache.get('temp') # 캐시에서 gallery 객체 꺼내옴
+        print(gallery)
 
         # 꺼내온 객체 Gallery 테이블에 저장
         gallery.name = predicted_data['name']
@@ -198,18 +198,20 @@ def Result(request):
 
 # 식단 업로드 페이지 -> 날짜 선택 -> '다음 단계' -> 예측이 틀렸을 때 직접 검색
 def search(predicted):
-    searched = Food.objects.get(name=predicted)
+    try:
+        searched = Food.objects.get(name=predicted)
 
-    data = {
-        'name': predicted,
-        'total': searched.total,
-        'kcal': searched.kcal,
-        'carbon': searched.carbon,
-        'pro': searched.pro,
-        'fat': searched.fat,
-    }
-    return data
-
+        data = {
+            'name': predicted,
+            'total': searched.total,
+            'kcal': searched.kcal,
+            'carbon': searched.carbon,
+            'pro': searched.pro,
+            'fat': searched.fat,
+        }
+        return data
+    except Exception as e:
+        return "searcherror"
 # Daily 식단 페이지 조회
 @csrf_exempt
 def Daily(request):
@@ -293,36 +295,35 @@ def handle_uploaded_file(uploaded_file):
 # model 예측(torchserve)
 @csrf_exempt
 def prediction(image_path):
-    return "홍어무침"
-    # # 이미지 파일 열기
-    # with open(image_path, 'rb') as f:
-    #     image_data = f.read() # 이미지
-    #
-    # # torchserve API 호출
-    # url = 'http://[퍼블릭IP주소]/predictions/model1'  # torchserve의 예측 엔드포인트 URL
-    # headers = {'Content-Type': 'application/octet-stream'}
-    # response = requests.post(url, headers=headers, data=image_data)
-    #
-    # # 결과 확인
-    # if response.status_code == 200:
-    #     result = response.json()
-    #     sorted_data = sorted(result.items(), key=lambda x: x[1], reverse=True) # value 값으로 정렬
-    #     sorted_keys = [item[0] for item in sorted_data]
-    #     label_path = os.path.join(settings.STATIC_ROOT, 'model_label.json')
-    #     label_data = read_json_file(label_path)
-    #     top5 = {}
-    #
-    #     for key in sorted_keys:
-    #         label = label_data[key], prob = result[key]
-    #         top5[label] = prob
-    #
-    #     top5_json = json.dumps(top5) # json 파일로 변환
-    #     print("성공")
-    #     print(f"분류 결과 : {top5_json}")
-    #     return list(top5.keys())[0] # top 1의 음식 이름
-    # else:
-    #     print("실패")
-    #     return None
+    # 이미지 파일 열기
+    with open(image_path, 'rb') as f:
+        image_data = f.read() # 이미지
+
+    # torchserve API 호출
+    url = 'http://[퍼블릭IP주소]/predictions/model1'  # torchserve의 예측 엔드포인트 URL
+    headers = {'Content-Type': 'application/octet-stream'}
+    response = requests.post(url, headers=headers, data=image_data)
+
+    # 결과 확인
+    if response.status_code == 200:
+        result = response.json()
+        sorted_data = sorted(result.items(), key=lambda x: x[1], reverse=True) # value 값으로 정렬
+        sorted_keys = [item[0] for item in sorted_data]
+        label_path = os.path.join(settings.STATIC_ROOT, 'model_label.json')
+        label_data = read_json_file(label_path)
+        top5 = {}
+
+        for key in sorted_keys:
+            label = label_data[key], prob = result[key]
+            top5[label] = prob
+
+        top5_json = json.dumps(top5) # json 파일로 변환
+        print("성공")
+        print(f"분류 결과 : {top5_json}")
+        return list(top5.keys())[0] # top 1의 음식 이름
+    else:
+        print("실패")
+        return None
 
 
 # json 파일 읽어오기

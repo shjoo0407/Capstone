@@ -20,7 +20,7 @@ urlpatterns = [
     #path('main/daily/{date}/fileupload', # todo 식단 업로드 -> 날짜 선택 -> 파일 업로드 버튼 클릭
     path('main/imageupload/', view2.ImageUpload, name='imageupload'),
 
-    path('main/result/', view2.Result, name='result'),
+    path('result/', view2.Result, name='result'),
 
     # Daily 식단 페이지(todo)
     path('main/daily/', view2.Daily, name='daily'), # Daily 식단 페이지 조회(GET)
