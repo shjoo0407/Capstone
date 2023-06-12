@@ -244,25 +244,24 @@ def Statistics(request):
     if validate_token(request):
         if request.method == 'GET':
             userid = get_id_from_token(request)
-            if request.path == '/api/main/stats':
+            if request.path == '/api/main/stats/':
                 data = get_stat(userid, 7)
                 return JsonResponse(data, safe=False, status=200)
 
-            elif request.path == '/api/main/stats/month1':
+            elif request.path == '/api/main/stats/month1/':
                 data = get_stat(userid, 30)
                 return JsonResponse(data, safe=False, status=200)
 
-            elif request.path == '/api/main/stats/month3':
+            elif request.path == '/api/main/stats/month3/':
                 data = get_stat(userid, 90)
                 return JsonResponse(data, safe=False, status=200)
 
-            elif request.path == '/api/main/stats/year':
+            elif request.path == '/api/main/stats/year/':
                 data = get_stat(userid, 365)
                 return JsonResponse(data, safe=False, status=200)
 
-        print("실패1: 잘못된 요청")
         return JsonResponse({'message': '잘못된 요청'}, status=500)
-    print("실패2: 유효하지 않은 토큰")
+
     return JsonResponse({'message': '유효하지 않은 토큰'}, status=500)
 
 @csrf_exempt
