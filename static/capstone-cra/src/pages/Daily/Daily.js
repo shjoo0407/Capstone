@@ -60,7 +60,14 @@ function Daily() {
   //     console.error("데이터를 가져오는 동안 오류가 발생했습니다:", error);
   //   }
   // };
-
+  const getPercent = (recommended, actual) => {
+    const result = (actual / recommended).toFixed(2);
+    console.log("result: ", result);
+    if (result >= 1) {
+      return 1;
+    }
+    return result;
+  };
   // 이전 달로 이동
   const goToPreviousMonth = () => {
     const previousMonth = new Date(
@@ -114,7 +121,7 @@ function Daily() {
         setProtein([dataJson.protein.recommended, dataJson.protein.actual]);
         setFat([dataJson.fat.recommended, dataJson.fat.actual]);
 
-        console.log(menuList, cal, carbon, protein, fat);
+        console.log(cal, carbon, protein, fat);
       } else {
         throw new Error("GET 요청에 실패했습니다.");
       }
@@ -186,99 +193,105 @@ function Daily() {
 
       <div className="main">
         <div className="common-inner main-content daily-content">
-          <div className="month-container">
-            <div className="calendar-header">
-              <button onClick={goToPreviousMonth} className="btn-left">
-                <img
-                  className="arrow-img"
-                  src={leftArrow}
-                  alt="왼쪽 화살표 버튼"
-                />
-              </button>
-              <span>{monthYearLabel}</span>
-              <button onClick={goToNextMonth} className="btn-right">
-                <img
-                  className="arrow-img"
-                  src={rightArrow}
-                  alt="오른쪽 화살표 버튼"
-                />
-              </button>
+          <div className="daily-daily">
+            <div className="month-container">
+              <div className="calendar-header">
+                <button onClick={goToPreviousMonth} className="btn-left">
+                  <img
+                    className="arrow-img"
+                    src={leftArrow}
+                    alt="왼쪽 화살표 버튼"
+                  />
+                </button>
+                <span>{monthYearLabel}</span>
+                <button onClick={goToNextMonth} className="btn-right">
+                  <img
+                    className="arrow-img"
+                    src={rightArrow}
+                    alt="오른쪽 화살표 버튼"
+                  />
+                </button>
+              </div>
+              <div className="calendar">
+                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
+                  (day) => (
+                    <div className="calendar-day-label" key={day}>
+                      {day}
+                    </div>
+                  )
+                )}
+                {calendarData.map((item, index) => (
+                  <div
+                    key={index}
+                    className={`daily-day ${
+                      item.isCurrentMonth ? "current-month" : "other-month"
+                    }`}
+                    onClick={() =>
+                      handleDateClick(index, item.year, item.month, item.day)
+                    }
+                    style={{
+                      backgroundColor:
+                        selectedButton === index
+                          ? "rgba(60, 179, 113, 0.6)"
+                          : "white",
+                    }}
+                  >
+                    {item.day}
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="calendar">
-              {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-                <div className="calendar-day-label" key={day}>
-                  {day}
-                </div>
-              ))}
-              {calendarData.map((item, index) => (
-                <div
-                  key={index}
-                  className={`daily-day ${
-                    item.isCurrentMonth ? "current-month" : "other-month"
-                  }`}
-                  onClick={() =>
-                    handleDateClick(index, item.year, item.month, item.day)
-                  }
-                  style={{
-                    backgroundColor:
-                      selectedButton === index ? "black" : "white",
-                  }}
-                >
-                  {item.day}
-                </div>
-              ))}
+            <div className="container-sub upload-right-container">
+              <div className="nutrition-box">
+                <ul className="nutrition-list">
+                  <li className="nutrition-item">
+                    <span className="title">칼로리</span>
+                    <CalorieBarChart
+                      width="320"
+                      percent={getPercent(cal[0], cal[1])}
+                      color="rgba(46, 204, 113, 0.72)"
+                    />
+                    <span className="content">
+                      {cal[1]}/{cal[0]}kcal
+                    </span>
+                  </li>
+                  <li className="nutrition-item">
+                    <span className="title">탄수화물</span>
+                    <CalorieBarChart
+                      width="320"
+                      percent={getPercent(carbon[0], carbon[1])}
+                      color="rgb(216, 100, 169)"
+                    />
+                    <span className="content">
+                      {carbon[1]}/{carbon[0]}g
+                    </span>
+                  </li>
+                  <li className="nutrition-item">
+                    <span className="title">단백질</span>
+                    <CalorieBarChart
+                      width="320"
+                      percent={getPercent(protein[0], protein[1])}
+                      color="rgb(122, 168, 116)"
+                    />
+                    <span className="content">
+                      {protein[1]}/{protein[0]}g
+                    </span>
+                  </li>
+                  <li className="nutrition-item">
+                    <span className="title">지방</span>
+                    <CalorieBarChart
+                      width="320"
+                      percent={getPercent(fat[0], fat[1])}
+                      color="rgb(235, 176, 45)"
+                    />
+                    <span className="content">
+                      {fat[1]}/{fat[0]}g
+                    </span>
+                  </li>
+                </ul>
+              </div>
+              <div className="radial-graph-box"></div>
             </div>
-          </div>
-          <div className="container-sub upload-right-container">
-            <div className="nutrition-box">
-              <ul className="nutrition-list">
-                <li className="nutrition-item">
-                  <span className="title">칼로리</span>
-                  <CalorieBarChart
-                    width="320"
-                    percent={getPercent(cal[0], cal[1])}
-                    color="rgba(46, 204, 113, 0.72)"
-                  />
-                  <span className="content">
-                    {cal[1]}/{cal[0]}kcal
-                  </span>
-                </li>
-                <li className="nutrition-item">
-                  <span className="title">탄수화물</span>
-                  <CalorieBarChart
-                    width="320"
-                    percent={getPercent(carbon[0], carbon[1])}
-                    color="rgb(216, 100, 169)"
-                  />
-                  <span className="content">
-                    {carbon[1]}/{carbon[0]}g
-                  </span>
-                </li>
-                <li className="nutrition-item">
-                  <span className="title">단백질</span>
-                  <CalorieBarChart
-                    width="320"
-                    percent={getPercent(protein[0], protein[1])}
-                    color="rgb(122, 168, 116)"
-                  />
-                  <span className="content">
-                    {protein[1]}/{protein[0]}g
-                  </span>
-                </li>
-                <li className="nutrition-item">
-                  <span className="title">지방</span>
-                  <CalorieBarChart
-                    width="320"
-                    percent={getPercent(fat[0], fat[1])}
-                    color="rgb(235, 176, 45)"
-                  />
-                  <span className="content">
-                    {fat[1]}/{fat[0]}g
-                  </span>
-                </li>
-              </ul>
-            </div>
-            <div className="radial-graph-box"></div>
           </div>
         </div>
       </div>
