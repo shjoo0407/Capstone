@@ -25,6 +25,7 @@ const MenuList = ({ menuItems, handleDelete }) => {
   //       setDeleteStatus("메뉴 삭제 실패");
   //     });
   // };
+  console.log(menuItems);
 
   return (
     <div>
@@ -32,7 +33,8 @@ const MenuList = ({ menuItems, handleDelete }) => {
         <div className="menu-item" key={menu.id}>
           <div className="menu-item-left">
             <img src={cutleryIcon} alt="포크 아이콘" />
-            <span>{menu.name}</span>
+            {/* <span>{menu.name}</span> */}
+            <span>{menu}</span>
           </div>
 
           <div className="menu-item-right">
