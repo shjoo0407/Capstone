@@ -5,7 +5,6 @@ class GalleryAdmin(admin.ModelAdmin) :
     list_display = ('user', 'image_id', 'name', 'total', 'kcal', 'carbon', 'pro', 'fat', 'upload_date', 'food_image')
 
 admin.site.register(Gallery, GalleryAdmin)
-#admin.site.register(Gallery)
 
 class FoodAdmin(admin.ModelAdmin):
     list_display = ('name', 'total', 'kcal', 'carbon', 'pro', 'fat')
