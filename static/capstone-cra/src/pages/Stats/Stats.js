@@ -95,6 +95,38 @@ function Stats() {
   }, []);
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = jsonLocalStorage.getItem("token");
+
+        // 토큰 유무 확인
+        if (!token) {
+          throw new Error("토큰이 없습니다.");
+        }
+
+        const apiUrl = "/api/main/stats/";
+        const response = await fetch(apiUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const responseJson = await response.json();
+          setData(responseJson);
+          console.log("data", data);
+        } else {
+          throw new Error("GET 요청에 실패했습니다.");
+        }
+      } catch (error) {
+        console.error("GET 요청 오류:", error);
+      }
+    };
+
+    fetchData();
+  }, [over3Month]);
+
+  useEffect(() => {
     console.log("data", data);
   }, [data]);
 
@@ -102,14 +134,14 @@ function Stats() {
     const type = e.target.value;
     console.log(type);
     setSelectedButton(type);
-    if (type === "weekly" || "month") {
-      setOver3Month(false);
-    } else {
-      setOver3Month(true);
-    }
 
     try {
       const token = jsonLocalStorage.getItem("token");
+      //      if (type === "weekly" || "month") {
+      //        setOver3Month(false);
+      //        } else {
+      //        setOver3Month(true);
+      //        }
 
       // 토큰 유무 확인
       if (!token) {
@@ -117,8 +149,11 @@ function Stats() {
       }
 
       let apiUrl = `/api/main/stats/${type}/`;
+      setOver3Month(true);
 
       if (type === "weekly") {
+        setOver3Month(false);
+        console.log(over3Month);
         apiUrl = "/api/main/stats/";
       }
 
