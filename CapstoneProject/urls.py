@@ -30,10 +30,6 @@ import os
 from main import views
 
 urlpatterns = [
-    # 테스트
-    path('test/testapi/', views.test_view),
-    path('test/', TemplateView.as_view(template_name='testview.html')),
-
     # 관리자 페이지
     path('admin/', admin.site.urls),
 

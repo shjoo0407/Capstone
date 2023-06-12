@@ -24,6 +24,7 @@ urlpatterns = [
     path('main/daily/', view2.Daily, name='daily'), # Daily 식단 페이지 조회(GET)
     #path('main/daily/{date}/',  # #todo Daily 식단 -> 날짜 선택(해당 날짜의 칼/탄/단/지 그래프)(GET)
 
+
     # 식단 통계 페이지
     path('main/stats/', view2.Statistics, name='stats'), # 식단 통계 페이지(일주일) 조회(GET)
     path('main/stats/month/', view2.Statistics, name='stats_month1'), # 식단 통계 페이지(1개월) 조회(GET)
