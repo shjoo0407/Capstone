@@ -18,6 +18,8 @@ from django.core.files.storage import FileSystemStorage
 import os
 from django.conf import settings
 from django.core.cache import cache
+from collections import defaultdict
+import pytz
 
 
 # Create your views here.
@@ -36,14 +38,28 @@ def Upload(request):
                 .annotate(total_calories=Sum('kcal'))
                 .values('upload_date', 'total_calories')
             )
+            print(aggregated_data)
 
-            data = [
+            seoul_tz = pytz.timezone('Asia/Seoul')
+            temp_data = [
                 {
-                    'date': item['upload_date'].strftime('%Y%m%d')if item['upload_date'] is not None else None,
+                    'date': item['upload_date'].astimezone(seoul_tz).strftime('%Y%m%d') if item['upload_date'] is not None else None,
                     'total_calories': item['total_calories']
                 }
                 for item in aggregated_data
             ]
+            print(temp_data)
+            # create a dictionary to hold date and total calories
+            calories_by_date = defaultdict(float)  # default value of float is 0.0
+
+            for item in temp_data:
+                # sum up calories by date
+                calories_by_date[item['date']] += item['total_calories']
+
+            # convert the defaultdict to a list of dictionaries
+            data = [{'date': k, 'total_calories': v} for k, v in calories_by_date.items()]
+
+            print(data)
             return JsonResponse(data, safe=False, status=200)
 
         else:
