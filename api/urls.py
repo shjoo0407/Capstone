@@ -21,6 +21,7 @@ urlpatterns = [
     path('main/imageupload/', view2.ImageUpload, name='imageupload'),
 
     path('result/', view2.Result, name='result'),
+    path('main/menu/<str:date>/<int:menuId>/', view2.DeleteMenu, name='deletemenu'),
 
     # Daily 식단 페이지(todo)
     path('main/daily/', view2.Daily, name='daily'), # Daily 식단 페이지 조회(GET)
