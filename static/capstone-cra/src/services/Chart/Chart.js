@@ -69,6 +69,7 @@ const MyResponsiveLine = ({ data }) => (
 );
 
 function Chart({ data, over3Month }) {
+  console.log(over3Month);
   const statsData = [
     {
       id: "칼로리",
@@ -94,7 +95,7 @@ function Chart({ data, over3Month }) {
 
   return (
     <div style={{ height: 500, width: 1200 }}>
-      {over3Month && (
+      {over3Month === true && (
         <MyResponsiveLine
           data={statsData}
           axisBottom={null}
@@ -102,7 +103,7 @@ function Chart({ data, over3Month }) {
           enableGridX={false}
         />
       )}
-      {!over3Month && (
+      {over3Month === false && (
         <MyResponsiveLine
           data={statsData}
           axisBottom={{
