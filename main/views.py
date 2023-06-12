@@ -1,5 +1,3 @@
-import os
-
 from django.shortcuts import render
 from accounts.views import validate_token
 from accounts.views import get_id_from_token
@@ -17,8 +15,8 @@ from django.views.decorators.csrf import csrf_exempt
 from accounts.views import get_user_model
 from datetime import date, datetime, timedelta
 from django.core.files.storage import FileSystemStorage
+import os
 from django.conf import settings
-
 
 
 # Create your views here.
@@ -33,19 +31,18 @@ def Upload(request):
             # Gallery 에서 날짜별 총 칼로리 섭취량 반환(ex date : 230531, total_calories : 2000)
             aggregated_data = (
                 Gallery.objects.filter(user=userid)
-                .annotate(date=TruncDate('upload_date'))
-                .values('date')
                 .annotate(total_calories=Sum('kcal'))
-                .values('date', 'total_calories')
+                .values('upload_date', 'total_calories')
             )
-            print(f"aggregated_data: {aggregated_data}")
+
             data = [
                 {
-                    'date': item['date'].strftime('%Y%m%d')if item['date'] is not None else None,
+                    'date': item['upload_date'].strftime('%Y%m%d')if item['upload_date'] is not None else None,
                     'total_calories': item['total_calories']
                 }
                 for item in aggregated_data
             ]
+            print(f"data : {data}")
 
             # galleries = Gallery.objects.filter(user=userid)
             # # 각 객체의 정보를 JSON 형식으로 변환합니다.
@@ -245,22 +242,30 @@ def Statistics(request):
     if validate_token(request):
         if request.method == 'GET':
             userid = get_id_from_token(request)
-            data = get_stat(userid)
-            print(f"성공, data: {data}")
-            print(f"type : {type(data)}")
-            #data = json.dumps(data)
-            print(f"type : {type(data)}")
-            return JsonResponse(data, safe=False, status=200)
+            if request.path == '/api/main/stats/':
+                data = get_stat(userid, 7)
+                return JsonResponse(data, safe=False, status=200)
 
-        print("실패1: 잘못된 요청")
+            elif request.path == '/api/main/stats/month1/':
+                data = get_stat(userid, 30)
+                return JsonResponse(data, safe=False, status=200)
+
+            elif request.path == '/api/main/stats/month3/':
+                data = get_stat(userid, 90)
+                return JsonResponse(data, safe=False, status=200)
+
+            elif request.path == '/api/main/stats/year/':
+                data = get_stat(userid, 365)
+                return JsonResponse(data, safe=False, status=200)
+
         return JsonResponse({'message': '잘못된 요청'}, status=500)
-    print("실패2: 유효하지 않은 토큰")
+
     return JsonResponse({'message': '유효하지 않은 토큰'}, status=500)
 
 @csrf_exempt
-def get_stat(userid):
+def get_stat(userid, p):
     today = datetime.now().date()
-    week_ago = today - timedelta(days=6)
+    week_ago = today - timedelta(days=p-1)
 
     stat = {
         'kcal' : [],
@@ -269,7 +274,7 @@ def get_stat(userid):
         'fat' : []
     }
 
-    for i in range(7):
+    for i in range(p):
         date = week_ago + timedelta(days=i)
         next_date = date + timedelta(days=1)
 
@@ -304,10 +309,6 @@ def get_stat(userid):
         })
 
     return stat
-
-
-
-
 
 # todo 이미지 파일 업로드 &
 # def FileUpload(request):
@@ -353,19 +354,19 @@ def ImageUpload(request):
         food_image = request.FILES.get('photo')
 
         # 새로운 Gallery 객체 생성
-        gallery = Gallery(user_id=userid, name='',total='', kcal='', pro='', carbon='', fat='', food_image=food_image)
+        gallery = Gallery(user_id=userid, name='', total='', kcal='', pro='', carbon='', fat='', food_image=food_image)
         # DB에 저장
         gallery.save()
 
         uploaded_file_url = handle_uploaded_file(food_image)
         print(f"uploaded_file_url : {uploaded_file_url}")
         file_path = os.path.join(settings.MEDIA_ROOT, uploaded_file_url.lstrip('/media/'))
-        predicted_name = prediction(file_path)
+        predicted_name = prediction(file_path) # 모델이 예측한 음식 이름
 
         try:
             food = Food.objects.get(name=predicted_name)
         except Food.DoesNotExist:
-            return JsonResponse({'error' : f"{predicted_name} 을 찾을 수 없습니다."}, status=404)
+            return JsonResponse({'error': f"{predicted_name} 을 찾을 수 없습니다."}, status=404)
 
         gallery.name = predicted_name
         gallery.total = food.total
@@ -377,8 +378,8 @@ def ImageUpload(request):
 
         return JsonResponse({"message": "업로드 완료",
                              'image_id': gallery.image_id,
-                             'user_id' : userid,
-                             'upload date' : gallery.upload_date,
+                             'user_id': userid,
+                             'upload date': gallery.upload_date,
                              'name': gallery.name,
                              'total': gallery.total,
                              'kcal': gallery.kcal,
@@ -398,8 +399,6 @@ def handle_uploaded_file(uploaded_file):
     print(f"fs : {fs}, filename : {filename}, uploaded_file_url : {uploaded_file_url}")
     return uploaded_file_url
 
-
-
 #todo(모델을 이용하여 이미지 분류)
 # 0. .mar 경로 : model/model_store/<.mar file>
 # 1. .mar 생성(torch-model-archiver --model-name <모델이름> --version <버전> --model-file <모델파일(.py)> --serialized-file <.pth파일> --handler <handler 파일> --export-path model/model_store/)
@@ -408,32 +407,24 @@ def handle_uploaded_file(uploaded_file):
 # 4. torchserve API 호출 후 등록된 모델에 이미지 넣어서 결과 확인
 @csrf_exempt
 def prediction(image_path):
-    absolute_image_path = os.path.join(settings.MEDIA_ROOT, image_path)
     # 이미지 파일 열기
-    with open(absolute_image_path, 'rb') as f:
+    with open(image_path, 'rb') as f:
         image_data = f.read() # 이미지
 
-
     # torchserve API 호출
-    url = 'http://localhost:8080/predictions/model1'  # torchserve의 예측 엔드포인트 URL
+    url = 'http://[퍼블릭IP주소]/predictions/model1'  # torchserve의 예측 엔드포인트 URL
     headers = {'Content-Type': 'application/octet-stream'}
     response = requests.post(url, headers=headers, data=image_data)
 
     # 결과 확인
     if response.status_code == 200:
         result = response.json()
-        # ex) result = {
-        #   "53": 0.9821317195892334,
-        #   "125": 0.016887102276086807,
-        #   "58": 0.0008895615465007722,
-        #   "81": 5.9507572586881e-05,
-        #   "123": 1.2144737411290407e-05
-        # }
         sorted_data = sorted(result.items(), key=lambda x: x[1], reverse=True) # value 값으로 정렬
         sorted_keys = [item[0] for item in sorted_data]
-
-        label_data = read_json_file('../model/model_label.json')
+        label_path = os.path.join(settings.STATIC_ROOT, 'model_label.json')
+        label_data = read_json_file(label_path)
         top5 = {}
+
         for key in sorted_keys:
             label = label_data[key], prob = result[key]
             top5[label] = prob
@@ -441,7 +432,7 @@ def prediction(image_path):
         top5_json = json.dumps(top5) # json 파일로 변환
         print("성공")
         print(f"분류 결과 : {top5_json}")
-        return list(top5.keys())[0]
+        return list(top5.keys())[0] # top 1의 음식 이름
     else:
         print("실패")
         return None
@@ -454,11 +445,10 @@ def read_json_file(file_path):
 def calculator(userid): # 권장 섭취량(칼로리, 탄수화물, 단백질, 지방) 계산기
     user = Account.objects.get(id=userid)
     today = date.today()
-    type(today)
 
     gender, birth, height, weight = user.gender, user.birth, user.height, user.weight
     birth_year, birth_month, birth_day = str(birth).split('-')[0], str(birth).split('-')[1], str(birth).split('-')[2]
-
+    print(birth_year, birth_month, birth_day)
     # 나이 계산
     if today.month > int(birth_month) or (today.month == int(birth_month) and today.day >= int(birth_day)):
         age = today.year - int(birth_year)
