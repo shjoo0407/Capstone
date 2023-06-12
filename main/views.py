@@ -118,10 +118,12 @@ def UploadDate(request, formattedDate):
             # 권장 섭취량
             recommended = calculator(userid) # 권장 섭취량([칼로리, 탄수화물, 단백질, 지방])
             # 날짜별 각 음식의 영양소 정보
-            date = datetime.strptime(formattedDate, '%Y%m%d').date()
+
+            date = datetime.strptime(formattedDate, '%Y%m%d')
+            next_date = date + timedelta(days=1)
 
             aggregated_data = (
-                Gallery.objects.filter(user=userid)
+                Gallery.objects.filter(user=userid, upload_date__range=(date, next_date))
                 .annotate(date=TruncDate('upload_date'))
                 .values('date')
                 .annotate(
@@ -130,10 +132,9 @@ def UploadDate(request, formattedDate):
                     total_pro=Sum('pro'),
                     total_fat=Sum('fat'),
                 )
-                .values('date', 'total_kcal', 'total_carbon', 'total_pro', 'total_fat')
             )[0]
 
-            menulist = [menu['name'] for menu in Gallery.objects.filter(user=userid).order_by('upload_date').values('name')]
+            menulist = [menu['name'] for menu in Gallery.objects.filter(user=userid, upload_date__range=(date, next_date)).order_by('upload_date').values('name')]
 
             if aggregated_data is None:
                 data = {
@@ -176,7 +177,6 @@ def UploadDate(request, formattedDate):
                     },
                 }
 
-            print(f"data : {data}")
             return JsonResponse(data, safe=False, status=200)
 
         #사진 업로드 버튼 "다음 단계"
