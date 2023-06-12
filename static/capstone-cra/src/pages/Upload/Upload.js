@@ -157,7 +157,7 @@ function Upload() {
       formData.append("realFoodName", realFoodName);
       console.log(realFoodName);
 
-      const response = await fetch("api/result", {
+      const response = await fetch("/api/result/", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
