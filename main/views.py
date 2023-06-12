@@ -31,20 +31,18 @@ def Upload(request):
             # Gallery 에서 날짜별 총 칼로리 섭취량 반환(ex date : 230531, total_calories : 2000)
             aggregated_data = (
                 Gallery.objects.filter(user=userid)
-                .annotate(date=TruncDate('upload_date'))
-                .values('date')
                 .annotate(total_calories=Sum('kcal'))
-                .values('date', 'total_calories')
+                .values('upload_date', 'total_calories')
             )
-            print(f"aggregated_data: {aggregated_data}")
 
             data = [
                 {
-                    'date': item['date'].strftime('%Y%m%d')if item['date'] is not None else None,
+                    'date': item['upload_date'].strftime('%Y%m%d')if item['upload_date'] is not None else None,
                     'total_calories': item['total_calories']
                 }
                 for item in aggregated_data
             ]
+            print(f"data : {data}")
 
             # galleries = Gallery.objects.filter(user=userid)
             # # 각 객체의 정보를 JSON 형식으로 변환합니다.
