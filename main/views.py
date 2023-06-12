@@ -42,18 +42,6 @@ def Upload(request):
                 }
                 for item in aggregated_data
             ]
-            print(f"data : {data}")
-
-            # galleries = Gallery.objects.filter(user=userid)
-            # # 각 객체의 정보를 JSON 형식으로 변환합니다.
-            # data = [{'name': gallery.name,
-            #          'total': gallery.total,
-            #          'kcal': gallery.kcal,
-            #          'protein': gallery.protein,
-            #          'carbon': gallery.carbon,
-            #          'fat': gallery.fat,
-            #          'uploaded_at': gallery.uploaded_at} for gallery in galleries]
-            # 결과를 반환합니다.
             return JsonResponse(data, safe=False, status=200)
 
         # 식단 업로드 버튼
@@ -126,35 +114,31 @@ def UploadDate(request, formattedDate):
     if validate_token(request):
         if request.method == 'GET':
             userid = get_id_from_token(request)
+
             # 권장 섭취량
             recommended = calculator(userid) # 권장 섭취량([칼로리, 탄수화물, 단백질, 지방])
             # 날짜별 각 음식의 영양소 정보
             date = datetime.strptime(formattedDate, '%Y%m%d').date()
-            food_data = (
-                Gallery.objects.filter(user=userid, upload_date=date)
-                .values('name', 'kcal', 'pro', 'carbon', 'fat')
-            )
 
-            # 날짜별 각 영양소의 총합
+            print(f"date : {date}")
+
+            print(Gallery.objects.filter(user=userid))
+
             aggregated_data = (
-                Gallery.objects.filter(user=userid, upload_date=date)
+                Gallery.objects.filter(user=userid)
+                .annotate(date=TruncDate('upload_date'))
+                .values('date')
                 .annotate(
                     total_kcal=Sum('kcal'),
-                    total_pro=Sum('pro'),
                     total_carbon=Sum('carbon'),
-                    total_fat=Sum('fat')
+                    total_pro=Sum('pro'),
+                    total_fat=Sum('fat'),
                 )
-                .values('total_kcal', 'total_pro', 'total_carbon', 'total_fat').first()
-            )
-            menulist = Gallery.objects.filter(user=userid).order_by('upload_date').values_list('name', flat=True)
-            # data = {
-            #     'date': date,
-            #     'total_kcal': aggregated_data['total_kcal'],
-            #     'total_pro': aggregated_data['total_pro'],
-            #     'total_carbon': aggregated_data['total_carbon'],
-            #     'total_fat': aggregated_data['total_fat'],
-            #     'foods': list(food_data)
-            # }
+                .values('date', 'total_kcal', 'total_carbon', 'total_pro', 'total_fat')
+            )[0]
+
+            menulist = [menu['name'] for menu in Gallery.objects.filter(user=userid).order_by('upload_date').values('name')]
+
             if aggregated_data is None:
                 data = {
                     'menulist': [],
@@ -188,7 +172,7 @@ def UploadDate(request, formattedDate):
                     },
                     'protein': {
                         'recommended': recommended[2],
-                        'actual': int(aggregated_data['total_protein']),
+                        'actual': int(aggregated_data['total_pro']),
                     },
                     'fat': {
                         'recommended': recommended[3],
@@ -196,6 +180,7 @@ def UploadDate(request, formattedDate):
                     },
                 }
 
+            print(f"data : {data}")
             return JsonResponse(data, safe=False, status=200)
 
         #사진 업로드 버튼 "다음 단계"
@@ -454,7 +439,6 @@ def calculator(userid): # 권장 섭취량(칼로리, 탄수화물, 단백질, �
         age = today.year - int(birth_year)
     else:
         age = today.year - int(birth_year) - 1
-
     # 칼로리
     # BMR 계산(해리스-베네딕트 공식)
     if gender == 'M':
