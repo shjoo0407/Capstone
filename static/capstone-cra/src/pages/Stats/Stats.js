@@ -22,6 +22,7 @@ function Stats() {
   const username = jsonLocalStorage.getItem("username");
   const [data, setData] = useState(null);
   const [selectedButton, setSelectedButton] = useState("weekly");
+  const [over3Month, setOver3Month] = useState(false);
 
   const testdata = {
     kcal: [
@@ -101,6 +102,12 @@ function Stats() {
     const type = e.target.value;
     console.log(type);
     setSelectedButton(type);
+    if (type === "weekly" || "month") {
+      setOver3Month(false);
+    } else {
+      setOver3Month(true);
+    }
+
     try {
       const token = jsonLocalStorage.getItem("token");
 
@@ -196,8 +203,11 @@ function Stats() {
               1년
             </button>
           </div>
-          {data ? <Chart data={data} /> : <p>로 딩 중.....</p>}
-          {/* {testdata && <Chart data={testdata} />} */}
+          {data ? (
+            <Chart data={data} over3Month={over3Month} />
+          ) : (
+            <p>로 딩 중.....</p>
+          )}
         </div>
       </div>
     </div>
