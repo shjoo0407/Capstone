@@ -167,3 +167,6 @@ LOGIN_URL = '/'
 # Security(csrf 토큰)
 CSRF_COOKIE_SECURE = False
 CSRF_COOKIE_HTTPONLY = False
+
+# URL 관련 설정
+APPEND_SLASH = False

@@ -32,15 +32,24 @@ function Upload() {
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewURL, setPreviewURL] = useState("");
-  const [foodName, setFoodName] = useState("");
-  const [calories, setCalories] = useState("");
 
   const [nextForm, setNextForm] = useState(false); // form 전환 상태 관리
 
   const [uploadStatus, setUploadStatus] = useState(""); // 업로드 상태 관리
 
-  const [nutritions, setNutritions] = useState(null); // bar 그래프로 표현되는, 해당 날짜의 영양성분 data
-  const [menuList, setMenuList] = useState([]); // 해당 날짜의 식단 리스트
+  // upload 페이지 로드 시 받는 권장섭취량 & 실제 섭취량 정보
+  const [cal, setCal] = useState([]);
+  const [carbon, setCarbon] = useState([]);
+  const [protein, setProtein] = useState([]);
+  const [fat, setFat] = useState([]);
+
+  const [menuList, setMenuList] = useState(null); // 해당 날짜의 식단 리스트
+
+  // 1차 업로드 후 받은 음식 data
+  const [foodData, setFoodData] = useState(null);
+
+  // 해당 음식이 아닌 경우 input
+  const [modified, setModified] = useState(null);
 
   // test용 menu item
   const menuItems = [
@@ -59,15 +68,31 @@ function Upload() {
   // 해당 날짜의 식단 리스트와 섭취한 영양성분 가져오기
   const fetchData = async () => {
     try {
-      const calMenu = await fetch(
-        "서버의_API_URL/칼로리_및_메뉴_가져오기_엔드포인트"
-        // API_URL에 params의 data 추가해서 넣으면 될듯
-      );
-      const calMenuData = await calMenu.json();
-      console.log(calMenuData);
+      const token = jsonLocalStorage.getItem("token");
+      if (!token) {
+        console.error("토큰이 없습니다!!!!");
+        return;
+      }
+      const data = await fetch(`../api/main/calendar/${formattedDate}/`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      // API_URL에 params의 data 추가해서 넣으면 될듯
+      const dataJson = await data.json();
+      console.log(dataJson);
+      setMenuList(dataJson.menulist);
+      setCal([dataJson.calorie.recommended, dataJson.calorie.actual]);
+      setCarbon([
+        dataJson.carbonhydrate.recommended,
+        dataJson.carbonhydrate.actual,
+      ]);
+      setProtein([dataJson.protein.recommended, dataJson.protein.actual]);
+      setFat([dataJson.fat.recommended, dataJson.fat.actual]);
 
-      setNutritions(calMenuData.nutritions);
-      setMenuList(calMenuData.menuList);
+      console.log(menuList, cal, carbon, protein, fat);
+      console.log("연결...... 완료......");
     } catch (error) {
       console.error("데이터를 가져오는 동안 오류가 발생했습니다:", error);
     }
@@ -85,34 +110,27 @@ function Upload() {
     if (!selectedFile) {
       return;
     }
-    // const formData = new FormData();
-    // formData.append("photo", selectedFile);
-
-    // fetch("api/upload/", {
-    //   method: "POST",
-    //   body: formData,
-    // })
-    //   .then((response) => response.json())
-    //   .then((data) => {
-    //     console.log(data);
-    //     // setFoodName(data.foodName);
-    //     // setCalories(data.calories);
-    //     setNextForm(true);
-    //   })
-    //   .catch((error) => console.error("Error:", error));
     try {
+      const token = jsonLocalStorage.getItem("token");
+      if (!token) {
+        console.error("토큰이 없습니다!!!!");
+        return;
+      }
       const formData = new FormData();
       formData.append("photo", selectedFile);
 
-      const response = await fetch("api/upload", {
+      const response = await fetch("../api/main/imageupload/", {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         body: formData,
       });
 
       if (response.ok) {
         const data = await response.json();
-        setFoodName(data.foodName); // 사진의 이름
-        setCalories(data.calories); // 사진의 칼로리
+        console.log(data);
+        setFoodData(data);
         setNextForm(true); // 다음 form으로 전환 (최종 업로드 form으로 전환)
         setUploadStatus("업로드 완료");
       } else {
@@ -126,34 +144,24 @@ function Upload() {
 
   // 최종 업로드
   const handleResultUpload = async () => {
-    if (!selectedFile || !foodName || !calories) {
-      return;
-    }
-
-    // const formData = new FormData();
-    // formData.append("photo", selectedFile);
-    // formData.append("foodName", foodName);
-    // formData.append("calories", calories);
-
-    // fetch("api/result", {
-    //   method: "POST",
-    //   body: formData,
-    // })
-    //   .then((response) => response.json())
-    //   .then((data) => {
-    //     console.log("Upload successful:", data);
-    //     setNextForm(false);
-    //   })
-    //   .catch((error) => console.error("Error:", error));
-
     try {
+      const token = jsonLocalStorage.getItem("token");
+      if (!token) {
+        console.error("토큰이 없습니다!!!!");
+        return;
+      }
+      const realFoodName = modified ? modified : foodData.predicted;
       const formData = new FormData();
-      formData.append("photo", selectedFile);
-      formData.append("foodName", foodName);
-      formData.append("calories", calories);
+      // formData.append("r", selectedFile);
+      // formData.append("isCorrect", foodData);
+      formData.append("realFoodName", realFoodName);
+      console.log(realFoodName);
 
-      const response = await fetch("api/result", {
+      const response = await fetch("/api/result/", {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         body: formData,
       });
 
@@ -161,24 +169,70 @@ function Upload() {
         // 성공적으로 결과를 전송한 경우 처리할 내용 작성
         const data = await response.json();
         console.log("Upload successful:", data);
+        // 값 초기화
         setNextForm(false);
+        setModified(null);
+        setFoodData(null);
+        fetchData();
       } else {
         // 전송 실패한 경우 처리할 내용 작성
-        console.log("error!");
+        console.log("POST 오류 발생");
       }
-
-      const calMenu = await fetch(
-        "서버의_API_URL/칼로리_및_메뉴_가져오기_엔드포인트"
-      );
-      const calMenuData = await response.json();
-
-      setNutritions(calMenuData.nutritions);
-      setMenuList(calMenuData.menuList);
     } catch (error) {
       console.error("Error:", error);
       // 전송 실패한 경우 처리할 내용 작성
     }
   };
+
+  // delete 버튼 클릭 시
+
+  const [deleteStatus, setDeleteStatus] = useState("");
+
+  const handleDelete = (menuId, date) => {
+    const token = jsonLocalStorage.getItem("token");
+    if (!token) {
+      console.error("토큰이 없습니다!!!!");
+      return;
+    }
+    fetch(`/api/main/menu/${date}/${menuId}/`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      // 다시 컴포넌트 불러와야 함.
+      .then((response) => {
+        if (response.ok) {
+          setDeleteStatus("메뉴가 삭제되었습니다.");
+          fetchData(); // menu list 다시 불러옴
+        } else {
+          setDeleteStatus("메뉴 삭제 실패");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        setDeleteStatus("메뉴 삭제 실패");
+      });
+  };
+
+  function handleInputChange(e) {
+    const userValue = e.target.value;
+    setModified(userValue);
+    console.log(modified);
+  }
+
+  const getPercent = (recommended, actual) => {
+    const result = (actual / recommended).toFixed(2);
+    console.log("result: ", result);
+    if (result >= 1) {
+      return 1;
+    }
+    return result;
+  };
+
+  if (!menuList) {
+    return null;
+  }
 
   return (
     <div>
@@ -196,11 +250,7 @@ function Upload() {
                   <div className="upload-img">
                     {previewURL && (
                       <div>
-                        <img
-                          src={previewURL || dummyImg}
-                          alt="Preview"
-                          // style={{ maxWidth: "100%" }}
-                        />
+                        <img src={previewURL || dummyImg} alt="Preview" />
                       </div>
                     )}
                     <input type="file" onChange={handleFileChange} />
@@ -210,18 +260,38 @@ function Upload() {
                     <div className="upload-info">
                       <div className="food-info">
                         <div className="food-name">
-                          {foodName || "닭가슴살 샐러드 "}
+                          {(foodData && foodData.predicted) ||
+                            "닭가슴살 샐러드 "}
                         </div>
-                        <div className="food-cal">{calories || "820kcal"}</div>
+                        <div className="food-cal">
+                          {(foodData && foodData.kcal) || "820kcal"}
+                        </div>
                       </div>
-                      <div className="cal-info">탄수화물 {"190g"}</div>
-                      <div className="cal-info">단백질 {"20g"}</div>
+                      <div className="cal-info">
+                        탄수화물 {(foodData && foodData.carbon) || "190g"}
+                      </div>
+                      <div className="cal-info">
+                        단백질 {(foodData && foodData.pro) || "20g"}
+                      </div>
+                      <div className="cal-info">
+                        지방 {(foodData && foodData.fat) || "20g"}
+                      </div>
                     </div>
                   )}
                 </div>
                 <div className="upload-buttons">
                   {nextForm && (
-                    <div className="modified-name">수정 이름 칸: </div>
+                    <div className="modified-name">
+                      <div className="modified-label">
+                        해당 음식이 아닌 경우:
+                      </div>
+                      <input
+                        type="text"
+                        id="modified"
+                        placeholder="음식 이름을 입력해주세요."
+                        onChange={handleInputChange}
+                      ></input>
+                    </div>
                   )}
                   {!nextForm && (
                     <button onClick={handleUpload}>다음 단계</button>
@@ -234,7 +304,8 @@ function Upload() {
               <div className="menu-box">
                 <div className="menu-box-title">식단</div>
                 <div className="menu">
-                  <MenuList menuItems={menuList} />
+                  <MenuList menuItems={menuList} handleDelete={handleDelete} />
+                  {/* <MenuList menuItems={menuItems} handleDelete={handleDelete} /> */}
                 </div>
               </div>
             </div>
@@ -242,49 +313,47 @@ function Upload() {
               <div className="nutrition-box">
                 <ul className="nutrition-list">
                   <li className="nutrition-item">
-                    <span className="title">
-                      {/* {nutritions && nutritions.calorie} */}
-                      칼로리
-                    </span>
+                    <span className="title">칼로리</span>
                     <CalorieBarChart
                       width="320"
-                      percent="0.7"
-                      // color="rgb(62, 122, 235)"
+                      percent={getPercent(cal[0], cal[1])}
                       color="rgba(46, 204, 113, 0.72)"
                     />
                     <span className="content">
-                      {/* {nutritions && nutritions.calorie}/1280kcal */}
-                      872/1280kcal
+                      {cal[1]}/{cal[0]}kcal
                     </span>
                   </li>
                   <li className="nutrition-item">
-                    <span className="title">
-                      {/* {nutritions && nutritions.calorie} */}
-                      탄수화물
-                    </span>
+                    <span className="title">탄수화물</span>
                     <CalorieBarChart
                       width="320"
-                      percent="0.4"
+                      percent={getPercent(carbon[0], carbon[1])}
                       color="rgb(216, 100, 169)"
                     />
                     <span className="content">
-                      {/* {nutritions && nutritions.calorie}/1280kcal */}
-                      222/520g
+                      {carbon[1]}/{carbon[0]}g
                     </span>
                   </li>
                   <li className="nutrition-item">
-                    <span className="title">
-                      {/* {nutritions && nutritions.calorie} */}
-                      단백질
-                    </span>
+                    <span className="title">단백질</span>
                     <CalorieBarChart
                       width="320"
-                      percent="0.84"
+                      percent={getPercent(protein[0], protein[1])}
                       color="rgb(122, 168, 116)"
                     />
                     <span className="content">
-                      {/* {nutritions && nutritions.calorie}/1280kcal */}
-                      59/70g
+                      {protein[1]}/{protein[0]}g
+                    </span>
+                  </li>
+                  <li className="nutrition-item">
+                    <span className="title">지방</span>
+                    <CalorieBarChart
+                      width="320"
+                      percent={getPercent(fat[0], fat[1])}
+                      color="rgb(235, 176, 45)"
+                    />
+                    <span className="content">
+                      {fat[1]}/{fat[0]}g
                     </span>
                   </li>
                 </ul>

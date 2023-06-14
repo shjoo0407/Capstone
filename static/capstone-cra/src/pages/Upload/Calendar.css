@@ -61,3 +61,19 @@
   width: 16px;
   height: auto;
 }
+
+.calendar-kcal {
+  width: 115px;
+  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 14px;
+  color: black;
+}
+
+.spoon-img {
+  height: 14px;
+  width: auto;
+  margin-right: 4px;
+}

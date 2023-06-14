@@ -4,6 +4,7 @@ import "../../styles/common.css";
 import "./MyPage.css";
 import HeaderNav from "../../components/Header/HeaderNav";
 import LoginHeaderNav from "../../components/Header/LoginHeaderNav";
+import { useNavigate } from "react-router-dom";
 
 import { Link } from "react-router-dom";
 
@@ -18,6 +19,7 @@ function UserInfoContent(props) {
 
 function MyPage() {
   const [userInfo, setUserInfo] = useState(null);
+  const navigate = useNavigate();
 
   const jsonLocalStorage = {
     setItem: (key, value) => {
@@ -29,6 +31,33 @@ function MyPage() {
   };
 
   const username = jsonLocalStorage.getItem("username");
+
+  const fetchData = async () => {
+    try {
+      const token = jsonLocalStorage.getItem("token");
+
+      // 토큰 유무 확인
+      if (!token) {
+        throw new Error("토큰이 없습니다.");
+      }
+
+      const apiUrl = "/api/accounts/mypage/";
+      const response = await fetch(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        setUserInfo(responseData);
+      } else {
+        throw new Error("GET 요청에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("GET 요청 오류:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,6 +79,7 @@ function MyPage() {
         if (response.ok) {
           const responseData = await response.json();
           setUserInfo(responseData);
+          console.log(userInfo);
         } else {
           throw new Error("GET 요청에 실패했습니다.");
         }
@@ -79,6 +109,7 @@ function MyPage() {
       fetch(apiUrl, {
         method: "PUT",
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(requestData),
@@ -86,6 +117,7 @@ function MyPage() {
         .then((response) => response.json())
         .then((data) => {
           console.log("PUT 요청 응답:", data);
+          fetchData();
         })
         .catch((error) => {
           console.error("PUT 요청 오류:", error);
@@ -111,7 +143,9 @@ function MyPage() {
       .then((response) => {
         if (response.ok) {
           console.log("DELETE 요청 성공");
-          // 필요한 처리 로직을 추가합니다.
+          localStorage.removeItem("username");
+          localStorage.removeItem("token");
+          navigate("/");
         } else {
           console.error("DELETE 요청 실패");
         }
